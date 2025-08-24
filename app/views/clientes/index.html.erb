@@ -1,0 +1,12 @@
+<div>
+  <h1 class="font-bold text-4xl">Clientes#index</h1>
+
+   <div>
+     <%= @clientes.each do |cliente| %>
+       <div>
+        <%= cliente.nombre %>
+       </div>
+     <% end %>
+   </div>
+
+</div>

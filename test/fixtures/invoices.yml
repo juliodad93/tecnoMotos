@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  numero_factura: MyString
+  fecha_factura: 2025-08-24 20:05:25
+  subtotal: 9.99
+  impuestos: 9.99
+  total: 9.99
+  metodo_pago: MyString
+  estado: MyString
+  client: one
+  user: one
+
+two:
+  numero_factura: MyString
+  fecha_factura: 2025-08-24 20:05:25
+  subtotal: 9.99
+  impuestos: 9.99
+  total: 9.99
+  metodo_pago: MyString
+  estado: MyString
+  client: two
+  user: two

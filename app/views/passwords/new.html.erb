@@ -1,4 +1,7 @@
-<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #f9fafb; padding: 3rem 1rem;">
+<!-- Importar Google Fonts - Cambiar esta línea para diferentes fuentes -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #f9fafb; padding: 3rem 1rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
   <div style="width: 100%; max-width: 400px;">
     
     <!-- Header -->
@@ -8,8 +11,8 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
         </svg>
       </div>
-      <h1 style="font-size: 2rem; font-weight: bold; color: #111827; margin-bottom: 0.5rem;">¿Olvidaste tu contraseña?</h1>
-      <p style="color: #6b7280; font-size: 1rem; line-height: 1.5;">No te preocupes, te enviaremos instrucciones de reinicio</p>
+      <h1 style="font-size: 2rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem; letter-spacing: -0.025em; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">¿Olvidaste tu contraseña?</h1>
+      <p style="color: #6b7280; font-size: 1rem; line-height: 1.5; font-weight: 400; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">No te preocupes, te enviaremos las instrucciones para restablecerla</p>
     </div>
 
     <!-- Flash Messages -->
@@ -19,7 +22,7 @@
           <svg style="width: 20px; height: 20px; color: #f87171; margin-right: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <p style="color: #b91c1c; font-size: 0.875rem; font-weight: 500; margin: 0;" id="alert"><%= alert %></p>
+          <p style="color: #b91c1c; font-size: 0.875rem; font-weight: 500; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" id="alert"><%= alert %></p>
         </div>
       </div>
     <% end %>
@@ -30,7 +33,7 @@
           <svg style="width: 20px; height: 20px; color: #4ade80; margin-right: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
-          <p style="color: #166534; font-size: 0.875rem; font-weight: 500; margin: 0;" id="notice"><%= notice %></p>
+          <p style="color: #166534; font-size: 0.875rem; font-weight: 500; margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" id="notice"><%= notice %></p>
         </div>
       </div>
     <% end %>
@@ -41,7 +44,7 @@
         
         <!-- Email Field -->
         <div style="margin-bottom: 1.5rem;">
-          <%= form.label :email_address, "Correo electronico", style: "display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;" %>
+          <%= form.label :email_address, "Dirección de correo electrónico", style: "display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" %>
           <div style="position: relative;">
             <div style="position: absolute; top: 50%; left: 0.75rem; transform: translateY(-50%); pointer-events: none;">
               <svg style="width: 20px; height: 20px; color: #9ca3af;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,24 +55,24 @@
                 required: true, 
                 autofocus: true, 
                 autocomplete: "username", 
-                placeholder: "Ingrese su correo", 
+                placeholder: "Ingresa tu dirección de correo electrónico", 
                 value: params[:email_address], 
-                style: "width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; transition: all 0.2s; box-sizing: border-box;" %>
+                style: "width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; transition: all 0.2s; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" %>
           </div>
-          <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem; margin-bottom: 0;">Enviaremos instrucciones para restablecer la contraseña a este correo electrónico</p>
+          <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem; margin-bottom: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Te enviaremos las instrucciones para restablecer tu contraseña a este correo</p>
         </div>
 
         <!-- Submit Button -->
         <div style="padding-top: 1rem;">
-          <%= form.submit "Instrucciones de restablecimiento por correo electrónico", 
-              style: "width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-weight: 600; padding: 0.875rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 1rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);" %>
+          <%= form.submit "Enviar instrucciones por correo", 
+              style: "width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-weight: 600; padding: 0.875rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-size: 1rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" %>
         </div>
 
         <!-- Back to Login -->
         <div style="text-align: center; padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid #e5e7eb;">
-          <%= link_to "← Volver a iniciar sesión", 
+          <%= link_to "← Volver al inicio de sesión", 
               new_session_path, 
-              style: "color: #3b82f6; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.25rem;" %>
+              style: "color: #3b82f6; font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.25rem; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" %>
         </div>
 
       <% end %>
@@ -77,8 +80,8 @@
 
     <!-- Footer -->
     <div style="text-align: center; margin-top: 2rem;">
-      <p style="font-size: 0.75rem; color: #9ca3af;">
-        🔒 Los enlaces de restablecimiento de contraseña caducan en 1 hora por seguridad
+      <p style="font-size: 0.75rem; color: #9ca3af; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+        🔒 Los enlaces para restablecer contraseña expiran en 1 hora por seguridad
       </p>
     </div>
   </div>

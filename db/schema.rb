@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_25_010548) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
   create_table "clientes", force: :cascade do |t|
     t.string "nombre"
     t.string "apellido"
@@ -146,21 +146,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_25_010548) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "nombre"
+    t.string "apellido"
+    t.string "identificacion"
+    t.string "cargo"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
-  end
-
-  create_table "usuarios", force: :cascade do |t|
-    t.string "nombre", limit: 100
-    t.string "apellido", limit: 100
-    t.string "identificacion", limit: 20
-    t.string "correo", limit: 100
-    t.string "cargo", limit: 50
-    t.string "password"
-    t.datetime "ultimo_acceso"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["correo"], name: "index_usuarios_on_correo", unique: true
-    t.index ["identificacion"], name: "index_usuarios_on_identificacion", unique: true
   end
 
   create_table "vehicles", force: :cascade do |t|

@@ -31,4 +31,8 @@
 /public/assets
 
 # Ignore master key for decrypting credentials and more.
+
+# Ignore .ruby-version file
+.ruby-version
+
 /config/master.key

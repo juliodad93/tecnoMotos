@@ -1,19 +1,28 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  nombre: MyString
-  apellido: MyString
-  identificacion: MyString
-  telefono: MyString
-  correo: MyString
-  direccion: MyString
-  fecha_registro: 2025-08-24 17:38:26
+cliente_uno:
+  nombre: Juan Carlos
+  apellido: Pérez García
+  identificacion: "12345678"
+  telefono: "+57 300 123-4567"
+  correo: juan.perez@email.com
+  direccion: Carrera 10 #20-30, Apartamento 5B
+  fecha_registro: <%= 1.month.ago %>
 
-two:
-  nombre: MyString
-  apellido: MyString
-  identificacion: MyString
-  telefono: MyString
-  correo: MyString
-  direccion: MyString
-  fecha_registro: 2025-08-24 17:38:26
+cliente_dos:
+  nombre: María Fernanda
+  apellido: López Rodríguez
+  identificacion: "87654321"
+  telefono: "+57 301 987-6543"
+  correo: maria.lopez@email.com
+  direccion: Calle 15 #25-40, Casa 12
+  fecha_registro: <%= 2.weeks.ago %>
+
+cliente_tres:
+  nombre: Carlos Alberto
+  apellido: Ramírez Sánchez
+  identificacion: "11223344"
+  telefono: "+57 302 456-7890"
+  correo: carlos.ramirez@email.com
+  direccion: Avenida 5 #12-18, Local 3
+  fecha_registro: <%= 1.week.ago %>

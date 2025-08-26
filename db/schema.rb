@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_26_051247) do
   create_table "clientes", force: :cascade do |t|
     t.string "nombre"
     t.string "apellido"
@@ -24,22 +24,56 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
     t.index ["identificacion"], name: "index_clientes_on_identificacion", unique: true
   end
 
-  create_table "invoice_details", force: :cascade do |t|
-    t.integer "invoice_id", null: false
+  create_table "detalles_facturas", force: :cascade do |t|
+    t.integer "factura_id", null: false
     t.string "tipo_item"
-    t.integer "quantity"
-    t.decimal "cost_item"
-    t.text "description"
-    t.integer "service_id", null: false
-    t.integer "product_id", null: false
+    t.integer "cantidad"
+    t.decimal "costo_item"
+    t.text "descripcion"
+    t.integer "servicio_id"
+    t.integer "producto_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["invoice_id"], name: "index_invoice_details_on_invoice_id"
-    t.index ["product_id"], name: "index_invoice_details_on_product_id"
-    t.index ["service_id"], name: "index_invoice_details_on_service_id"
+    t.index ["factura_id"], name: "index_detalles_facturas_on_factura_id"
+    t.index ["producto_id"], name: "index_detalles_facturas_on_producto_id"
+    t.index ["servicio_id"], name: "index_detalles_facturas_on_servicio_id"
   end
 
-  create_table "invoices", force: :cascade do |t|
+  create_table "detalles_pedidos", force: :cascade do |t|
+    t.integer "pedido_id", null: false
+    t.integer "producto_id", null: false
+    t.integer "cantidad"
+    t.decimal "precio_unitario"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pedido_id"], name: "index_detalles_pedidos_on_pedido_id"
+    t.index ["producto_id"], name: "index_detalles_pedidos_on_producto_id"
+  end
+
+  create_table "detalles_servicio_productos", force: :cascade do |t|
+    t.integer "servicio_id"
+    t.integer "producto_id", null: false
+    t.integer "cantidad_usada"
+    t.decimal "precio_unitario"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["producto_id"], name: "index_detalles_servicio_productos_on_producto_id"
+    t.index ["servicio_id"], name: "index_detalles_servicio_productos_on_servicio_id"
+  end
+
+  create_table "detalles_servicio_vehiculos", force: :cascade do |t|
+    t.integer "servicio_id"
+    t.integer "vehiculo_id", null: false
+    t.text "descripcion"
+    t.datetime "fecha_inicio"
+    t.datetime "fecha_fin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["servicio_id"], name: "index_detalles_servicio_vehiculos_on_servicio_id"
+    t.index ["vehiculo_id"], name: "index_detalles_servicio_vehiculos_on_vehiculo_id"
+  end
+
+  create_table "facturas", force: :cascade do |t|
     t.string "numero_factura"
     t.datetime "fecha_factura"
     t.decimal "subtotal"
@@ -47,88 +81,45 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
     t.decimal "total"
     t.string "metodo_pago"
     t.string "estado"
-    t.integer "client_id", null: false
+    t.integer "cliente_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_invoices_on_client_id"
-    t.index ["numero_factura"], name: "index_invoices_on_numero_factura", unique: true
-    t.index ["user_id"], name: "index_invoices_on_user_id"
+    t.index ["cliente_id"], name: "index_facturas_on_cliente_id"
+    t.index ["numero_factura"], name: "index_facturas_on_numero_factura", unique: true
+    t.index ["user_id"], name: "index_facturas_on_user_id"
   end
 
-  create_table "order_details", force: :cascade do |t|
-    t.integer "order_id", null: false
-    t.integer "product_id", null: false
-    t.integer "cantidad"
-    t.decimal "precio_unitario"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["order_id"], name: "index_order_details_on_order_id"
-    t.index ["product_id"], name: "index_order_details_on_product_id"
-  end
-
-  create_table "orders", force: :cascade do |t|
+  create_table "pedidos", force: :cascade do |t|
     t.string "nombre_pedido"
     t.datetime "fecha_pedido"
     t.string "estado"
     t.decimal "total"
-    t.integer "supplier_id", null: false
+    t.integer "proveedor_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["supplier_id"], name: "index_orders_on_supplier_id"
-    t.index ["user_id"], name: "index_orders_on_user_id"
+    t.index ["proveedor_id"], name: "index_pedidos_on_proveedor_id"
+    t.index ["user_id"], name: "index_pedidos_on_user_id"
   end
 
-  create_table "products", force: :cascade do |t|
+  create_table "productos", force: :cascade do |t|
     t.string "nombre"
     t.text "descripcion"
     t.integer "cantidad_disponible"
     t.decimal "precio_unitario"
     t.decimal "precio_venta"
     t.string "sku"
-    t.integer "supplier_id", null: false
+    t.integer "proveedor_id", null: false
     t.datetime "fecha_registro"
     t.datetime "ultima_actualizacion"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["sku"], name: "index_products_on_sku", unique: true
-    t.index ["supplier_id"], name: "index_products_on_supplier_id"
+    t.index ["proveedor_id"], name: "index_productos_on_proveedor_id"
+    t.index ["sku"], name: "index_productos_on_sku", unique: true
   end
 
-  create_table "service_product_details", force: :cascade do |t|
-    t.integer "service_id", null: false
-    t.integer "product_id", null: false
-    t.integer "cantidad_usada"
-    t.decimal "precio_unitario"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["product_id"], name: "index_service_product_details_on_product_id"
-    t.index ["service_id"], name: "index_service_product_details_on_service_id"
-  end
-
-  create_table "service_vehicle_details", force: :cascade do |t|
-    t.integer "service_id", null: false
-    t.integer "vehicle_id", null: false
-    t.text "descripcion"
-    t.datetime "fecha_inicio"
-    t.datetime "fecha_fin"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["service_id"], name: "index_service_vehicle_details_on_service_id"
-    t.index ["vehicle_id"], name: "index_service_vehicle_details_on_vehicle_id"
-  end
-
-  create_table "sessions", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "ip_address"
-    t.string "user_agent"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_sessions_on_user_id"
-  end
-
-  create_table "suppliers", force: :cascade do |t|
+  create_table "proveedores", force: :cascade do |t|
     t.string "nombre"
     t.string "identificacion"
     t.string "telefono"
@@ -138,7 +129,30 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
     t.datetime "fecha_registro"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["identificacion"], name: "index_suppliers_on_identificacion", unique: true
+    t.index ["identificacion"], name: "index_proveedores_on_identificacion", unique: true
+  end
+
+  create_table "servicios", force: :cascade do |t|
+    t.string "nombre", null: false
+    t.text "descripcion"
+    t.decimal "precio_base", precision: 10, scale: 2
+    t.integer "duracion_estimada"
+    t.string "categoria"
+    t.boolean "activo", default: true
+    t.datetime "fecha_registro"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activo"], name: "index_servicios_on_activo"
+    t.index ["categoria"], name: "index_servicios_on_categoria"
+  end
+
+  create_table "sessions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -153,34 +167,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_042029) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  create_table "vehicles", force: :cascade do |t|
+  create_table "vehiculos", force: :cascade do |t|
     t.string "matricula"
     t.string "modelo"
     t.string "marca"
     t.integer "anio"
     t.string "color"
     t.text "descripcion"
-    t.integer "client_id", null: false
+    t.integer "cliente_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["client_id"], name: "index_vehicles_on_client_id"
-    t.index ["matricula"], name: "index_vehicles_on_matricula", unique: true
+    t.index ["cliente_id"], name: "index_vehiculos_on_cliente_id"
+    t.index ["matricula"], name: "index_vehiculos_on_matricula", unique: true
   end
 
-  add_foreign_key "invoice_details", "invoices"
-  add_foreign_key "invoice_details", "products"
-  add_foreign_key "invoice_details", "services"
-  add_foreign_key "invoices", "clients"
-  add_foreign_key "invoices", "users"
-  add_foreign_key "order_details", "orders"
-  add_foreign_key "order_details", "products"
-  add_foreign_key "orders", "suppliers"
-  add_foreign_key "orders", "users"
-  add_foreign_key "products", "suppliers"
-  add_foreign_key "service_product_details", "products"
-  add_foreign_key "service_product_details", "services"
-  add_foreign_key "service_vehicle_details", "services"
-  add_foreign_key "service_vehicle_details", "vehicles"
+  add_foreign_key "detalles_facturas", "facturas"
+  add_foreign_key "detalles_facturas", "productos"
+  add_foreign_key "detalles_facturas", "servicios", column: "servicio_id"
+  add_foreign_key "detalles_pedidos", "pedidos"
+  add_foreign_key "detalles_pedidos", "productos"
+  add_foreign_key "detalles_servicio_productos", "productos"
+  add_foreign_key "detalles_servicio_productos", "servicios", column: "servicio_id"
+  add_foreign_key "detalles_servicio_vehiculos", "servicios", column: "servicio_id"
+  add_foreign_key "detalles_servicio_vehiculos", "vehiculos"
+  add_foreign_key "facturas", "clientes"
+  add_foreign_key "facturas", "users"
+  add_foreign_key "pedidos", "proveedores", column: "proveedor_id"
+  add_foreign_key "pedidos", "users"
+  add_foreign_key "productos", "proveedores", column: "proveedor_id"
   add_foreign_key "sessions", "users"
-  add_foreign_key "vehicles", "clients"
+  add_foreign_key "vehiculos", "clientes"
 end

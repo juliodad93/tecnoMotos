@@ -1,12 +1,103 @@
-<div>
-  <h1 class="font-bold text-4xl">Clientes#index</h1>
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-bold text-gray-900">Clientes</h1>
+          <%= link_to "Nuevo Cliente", new_cliente_path, 
+              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+        </div>
+      </div>
 
-   <div>
-     <%= @clientes.each do |cliente| %>
-       <div>
-        <%= cliente.nombre %>
-       </div>
-     <% end %>
-   </div>
+      <!-- Search Bar -->
+      <div class="px-6 py-4 bg-gray-50">
+        <div class="max-w-md">
+          <input type="search" placeholder="Buscar cliente..." 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+      </div>
 
+      <!-- Clients Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identificación</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehículos</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @clientes.each do |cliente| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-10 w-10">
+                      <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span class="text-white font-medium text-sm">
+                          <%= cliente.nombre.first %><%= cliente.apellido.first %>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">
+                        <%= cliente.nombre %> <%= cliente.apellido %>
+                      </div>
+                      <div class="text-sm text-gray-500">
+                        <%= cliente.correo if cliente.correo.present? %>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= cliente.identificacion %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div>
+                    <%= cliente.telefono if cliente.telefono.present? %>
+                  </div>
+                  <div class="text-xs text-gray-400">
+                    <%= cliente.direccion if cliente.direccion.present? %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <%= cliente.vehiculos.count %> vehículo<%= "s" if cliente.vehiculos.count != 1 %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex items-center justify-end space-x-2">
+                    <%= link_to "Ver", cliente_path(cliente), 
+                        class: "text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition duration-200" %>
+                    <%= link_to "Editar", edit_cliente_path(cliente), 
+                        class: "text-yellow-600 hover:text-yellow-900 bg-yellow-50 hover:bg-yellow-100 px-3 py-1 rounded-md transition duration-200" %>
+                    <%= link_to "Eliminar", cliente_path(cliente), 
+                        method: :delete,
+                        data: { 
+                          confirm: "¿Estás seguro de que quieres eliminar este cliente?" 
+                        },
+                        class: "text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition duration-200" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        
+        <% if @clientes.empty? %>
+          <div class="text-center py-12">
+            <div class="text-gray-500">
+              <h3 class="text-lg font-medium mb-2">No hay clientes registrados</h3>
+              <p class="mb-4">Comienza agregando tu primer cliente</p>
+              <%= link_to "Agregar Cliente", new_cliente_path, 
+                  class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

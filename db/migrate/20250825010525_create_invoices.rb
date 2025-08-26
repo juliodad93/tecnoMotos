@@ -8,7 +8,7 @@ class CreateInvoices < ActiveRecord::Migration[8.0]
       t.decimal :total
       t.string :metodo_pago
       t.string :estado
-      t.references :client, null: false, foreign_key: true
+      t.references :cliente, null: false, foreign_key: { to_table: :clientes }
       t.references :user, null: false, foreign_key: true
 
       t.timestamps

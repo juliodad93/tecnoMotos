@@ -7,7 +7,7 @@ class CreateVehicles < ActiveRecord::Migration[8.0]
       t.integer :anio
       t.string :color
       t.text :descripcion
-      t.references :client, null: false, foreign_key: true
+      t.references :cliente, null: false, foreign_key: { to_table: :clientes }
 
       t.timestamps
     end

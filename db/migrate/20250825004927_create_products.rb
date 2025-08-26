@@ -7,7 +7,7 @@ class CreateProducts < ActiveRecord::Migration[8.0]
       t.decimal :precio_unitario
       t.decimal :precio_venta
       t.string :sku
-      t.references :supplier, null: false, foreign_key: true
+      t.references :proveedor, null: false, foreign_key: { to_table: :proveedores }
       t.datetime :fecha_registro
       t.datetime :ultima_actualizacion
 

@@ -5,7 +5,7 @@ class CreateOrders < ActiveRecord::Migration[8.0]
       t.datetime :fecha_pedido
       t.string :estado
       t.decimal :total
-      t.references :supplier, null: false, foreign_key: true
+      t.references :proveedor, null: false, foreign_key: { to_table: :proveedores }
       t.references :user, null: false, foreign_key: true
 
       t.timestamps

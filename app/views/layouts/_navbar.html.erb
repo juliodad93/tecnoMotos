@@ -1,0 +1,48 @@
+<nav class="bg-white shadow-sm border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo y marca -->
+      <div class="flex items-center">
+        <%= link_to root_path, class: "flex items-center space-x-3" do %>
+          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-lg">🏍️</span>
+          </div>
+          <span class="text-xl font-bold text-gray-900">TecnoMotos</span>
+        <% end %>
+      </div>
+
+      <!-- Navegación principal -->
+      <div class="flex items-center space-x-8">
+        <%= link_to clientes_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(clientes_path) || controller_name == 'clientes'}" do %>
+          👥 Clientes
+        <% end %>
+        
+        <%= link_to vehiculos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(vehiculos_path) || controller_name == 'vehiculos'}" do %>
+          🏍️ Vehículos
+        <% end %>
+        
+        <%= link_to users_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(users_path) || controller_name == 'users'}" do %>
+          👤 Usuarios
+        <% end %>
+      </div>
+
+      <!-- Usuario actual y logout -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+          <span class="<%= cargo_color(current_user.cargo) %> px-2 py-1 rounded-full text-xs font-medium">
+            <%= cargo_icon(current_user.cargo) %> <%= current_user.cargo_humanizado %>
+          </span>
+          <span class="text-sm text-gray-700">
+            <%= current_user.nombre %> <%= current_user.apellido %>
+          </span>
+        </div>
+        
+        <%= link_to session_path(Current.session), method: :delete, 
+            class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors",
+            data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } do %>
+          Cerrar Sesión
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>

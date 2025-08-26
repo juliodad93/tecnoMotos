@@ -1,0 +1,144 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to clientes_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Clientes
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @cliente.nombre %> <%= @cliente.apellido %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 h-12 w-12 mr-4">
+              <div class="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center">
+                <span class="text-white font-medium text-lg">
+                  <%= @cliente.nombre.first %><%= @cliente.apellido.first %>
+                </span>
+              </div>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                <%= @cliente.nombre %> <%= @cliente.apellido %>
+              </h1>
+              <p class="text-gray-500">ID: <%= @cliente.identificacion %></p>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <%= link_to "Editar", edit_cliente_path(@cliente), 
+                class: "bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= link_to "Eliminar", cliente_path(@cliente), 
+                method: :delete,
+                data: { confirm: "¿Estás seguro?" },
+                class: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Info -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información Personal</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+                <dd class="text-sm text-gray-900"><%= @cliente.nombre %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Apellido</dt>
+                <dd class="text-sm text-gray-900"><%= @cliente.apellido %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Identificación</dt>
+                <dd class="text-sm text-gray-900"><%= @cliente.identificacion %></dd>
+              </div>
+            </dl>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información de Contacto</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @cliente.telefono.present? ? @cliente.telefono : "No especificado" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Correo</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @cliente.correo.present? ? @cliente.correo : "No especificado" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Dirección</dt>
+                <dd class="text-sm text-gray-900">
+                  <%= @cliente.direccion.present? ? @cliente.direccion : "No especificada" %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicles Section -->
+      <div class="border-t border-gray-200">
+        <div class="px-6 py-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              Vehículos (<%= @vehiculos.count %>)
+            </h3>
+            <%= link_to "Agregar Vehículo", new_cliente_vehiculo_path(@cliente), 
+                class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+
+          <% if @vehiculos.any? %>
+            <div class="grid grid-cols-3 gap-4">
+              <% @vehiculos.each do |vehiculo| %>
+                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 class="font-medium text-gray-900"><%= vehiculo.marca %> <%= vehiculo.modelo %></h4>
+                    <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded"><%= vehiculo.anio %></span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">Matrícula: <%= vehiculo.matricula %></p>
+                  <% if vehiculo.color.present? %>
+                    <p class="text-sm text-gray-600 mb-3">Color: <%= vehiculo.color %></p>
+                  <% end %>
+                  <div class="flex space-x-2">
+                    <%= link_to "Ver", vehiculo_path(vehiculo), 
+                        class: "text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition duration-200" %>
+                    <%= link_to "Editar", edit_vehiculo_path(vehiculo), 
+                        class: "text-xs bg-yellow-50 text-yellow-600 hover:bg-yellow-100 px-2 py-1 rounded transition duration-200" %>
+                    <%= link_to "Eliminar", vehiculo_path(vehiculo), 
+                        method: :delete,
+                        data: { confirm: "¿Eliminar este vehículo?" },
+                        class: "text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1 rounded transition duration-200" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-8">
+              <p class="text-gray-500 mb-4">Este cliente no tiene vehículos registrados</p>
+              <%= link_to "Agregar Primer Vehículo", new_cliente_vehiculo_path(@cliente), 
+                  class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

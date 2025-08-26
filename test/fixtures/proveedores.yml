@@ -1,0 +1,17 @@
+proveedor_uno:
+  nombre: Repuestos García
+  identificacion: "900123456"
+  telefono: "+57 1 234-5678"
+  correo: contacto@repuestosgarcia.com
+  direccion: Calle 45 #12-34, Bogotá
+  persona_contacto: Carlos García
+  fecha_registro: <%= 1.month.ago %>
+
+proveedor_dos:
+  nombre: Distribuidora Moto Parts
+  identificacion: "900654321"
+  telefono: "+57 2 876-5432"
+  correo: ventas@motoparts.com
+  direccion: Carrera 15 #67-89, Medellín
+  persona_contacto: Ana Rodríguez
+  fecha_registro: <%= 2.weeks.ago %>

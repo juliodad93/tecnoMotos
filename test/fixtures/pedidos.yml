@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+pedido_uno:
+  nombre_pedido: "Pedido de Repuestos Enero"
+  fecha_pedido: <%= 1.week.ago %>
+  estado: "Pendiente"
+  total: 250000.00
+  proveedor: proveedor_uno
+  user: one
+
+pedido_dos:
+  nombre_pedido: "Pedido de Filtros y Aceites"
+  fecha_pedido: <%= 3.days.ago %>
+  estado: "En Proceso"
+  total: 180000.00
+  proveedor: proveedor_dos
+  user: one

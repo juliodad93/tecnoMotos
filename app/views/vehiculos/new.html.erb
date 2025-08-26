@@ -1,0 +1,51 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <%= link_to clientes_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Clientes
+          <% end %>
+        </li>
+        <% if @cliente.present? %>
+          <li>
+            <div class="flex items-center">
+              <span class="mx-2 text-gray-400">/</span>
+              <%= link_to cliente_path(@cliente), class: "text-gray-700 hover:text-blue-600" do %>
+                <%= @cliente.nombre %> <%= @cliente.apellido %>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500">Nuevo Vehículo</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-900">
+          <% if @cliente.present? %>
+            Nuevo Vehículo para <%= @cliente.nombre %> <%= @cliente.apellido %>
+          <% else %>
+            Nuevo Vehículo
+          <% end %>
+        </h1>
+        <p class="mt-1 text-sm text-gray-600">
+          Completa la información para registrar un nuevo vehículo en el sistema.
+        </p>
+      </div>
+
+      <!-- Form -->
+      <div class="px-6 py-6">
+        <%= render 'form', vehiculo: @vehiculo %>
+      </div>
+    </div>
+  </div>
+</div>

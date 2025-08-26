@@ -1,0 +1,29 @@
+aceite_motor:
+  nombre: Aceite de Motor 20W-50
+  descripcion: Aceite mineral para motores de 4 tiempos
+  cantidad_disponible: 50
+  precio_unitario: 25000.00
+  precio_venta: 35000.00
+  sku: "ACEITE-20W50-001"
+  proveedor: proveedor_uno
+  fecha_registro: <%= 1.week.ago %>
+
+filtro_aire:
+  nombre: Filtro de Aire Universal
+  descripcion: Filtro de aire de alta eficiencia para motocicletas
+  cantidad_disponible: 25
+  precio_unitario: 15000.00
+  precio_venta: 22000.00
+  sku: "FILTRO-AIRE-002"
+  proveedor: proveedor_dos
+  fecha_registro: <%= 3.days.ago %>
+
+pastillas_freno:
+  nombre: Pastillas de Freno Delanteras
+  descripcion: Pastillas de freno cerámicas de alta calidad
+  cantidad_disponible: 30
+  precio_unitario: 45000.00
+  precio_venta: 65000.00
+  sku: "PASTILLAS-FRENO-003"
+  proveedor: proveedor_uno
+  fecha_registro: <%= 5.days.ago %>

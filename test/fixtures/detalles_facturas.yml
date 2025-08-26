@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+detalle_factura_servicio:
+  factura: factura_uno
+  tipo_item: "Servicio"
+  cantidad: 1
+  costo_item: 45000.00
+  descripcion: "Cambio de aceite completo"
+  servicio_id: 1
+  producto: aceite_motor
+
+detalle_factura_producto:
+  factura: factura_dos
+  tipo_item: "Producto"
+  cantidad: 1
+  costo_item: 22000.00
+  descripcion: "Filtro de aire universal"
+  servicio_id: 
+  producto: filtro_aire

@@ -1,0 +1,141 @@
+<div class="space-y-6">
+  <%= form_with model: user, local: true, class: "space-y-6" do |form| %>
+    <% if user.errors.any? %>
+      <div class="rounded-md bg-red-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              Hay <%= pluralize(user.errors.count, "error") %> que impide<%= "n" if user.errors.count != 1 %> guardar este usuario:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul class="list-disc list-inside space-y-1">
+                <% user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Información Personal -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Información Personal</h3>
+        
+        <div>
+          <%= form.label :nombre, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :nombre, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              placeholder: "Nombre del usuario" %>
+        </div>
+
+        <div>
+          <%= form.label :apellido, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :apellido, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              placeholder: "Apellido del usuario" %>
+        </div>
+
+        <div>
+          <%= form.label :identificacion, "Cédula/RUC", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :identificacion, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              placeholder: "Número de identificación" %>
+        </div>
+      </div>
+
+      <!-- Información del Sistema -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Información del Sistema</h3>
+        
+        <div>
+          <%= form.label :email_address, "Correo Electrónico", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.email_field :email_address, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              placeholder: "usuario@tecnomotos.com" %>
+        </div>
+
+        <div>
+          <%= form.label :password, "Contraseña", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.password_field :password, 
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+              placeholder: user.persisted? ? "Dejar en blanco para no cambiar" : "Mínimo 6 caracteres" %>
+          <% if user.persisted? %>
+            <p class="mt-1 text-sm text-gray-500">Dejar en blanco para mantener la contraseña actual</p>
+          <% end %>
+        </div>
+
+        <!-- Enum Cargo -->
+        <div>
+          <%= form.label :cargo, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :cargo, 
+              User.cargo_options,
+              { prompt: "Selecciona un cargo" },
+              { class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+          <p class="mt-1 text-sm text-gray-500">
+            El cargo determina los permisos y accesos del usuario en el sistema
+          </p>
+          
+          <!-- Preview del cargo seleccionado -->
+          <div id="cargo-preview" class="mt-2 hidden">
+            <div class="bg-gray-50 rounded-md p-3">
+              <div class="flex items-center space-x-2">
+                <span id="cargo-icon" class="text-lg"></span>
+                <span id="cargo-name" class="text-sm font-medium text-gray-700"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+      <%= link_to "Cancelar", 
+          user.persisted? ? user_path(user) : users_path,
+          class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+      
+      <%= form.submit user.persisted? ? "Actualizar Usuario" : "Crear Usuario",
+          class: "px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cargoSelect = document.getElementById('user_cargo');
+  const cargoPreview = document.getElementById('cargo-preview');
+  const cargoIcon = document.getElementById('cargo-icon');
+  const cargoName = document.getElementById('cargo-name');
+  
+  const cargoData = {
+    'administrador': { icon: '👑', name: 'Administrador - Acceso completo al sistema' },
+    'tecnico': { icon: '🔧', name: 'Técnico - Gestión de servicios y reparaciones' },
+    'comercial': { icon: '💼', name: 'Comercial - Ventas y atención al cliente' },
+    'administrativo': { icon: '📊', name: 'Administrativo - Facturación y reportes' }
+  };
+  
+  function updateCargoPreview() {
+    const selectedCargo = cargoSelect.value;
+    if (selectedCargo && cargoData[selectedCargo]) {
+      cargoIcon.textContent = cargoData[selectedCargo].icon;
+      cargoName.textContent = cargoData[selectedCargo].name;
+      cargoPreview.classList.remove('hidden');
+    } else {
+      cargoPreview.classList.add('hidden');
+    }
+  }
+  
+  cargoSelect.addEventListener('change', updateCargoPreview);
+  
+  // Mostrar preview inicial si hay un valor seleccionado
+  updateCargoPreview();
+});
+</script>

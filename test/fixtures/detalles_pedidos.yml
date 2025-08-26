@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+detalle_uno:
+  pedido: pedido_uno
+  producto: aceite_motor
+  cantidad: 4
+  precio_unitario: 25000.00
+
+detalle_dos:
+  pedido: pedido_uno
+  producto: filtro_aire
+  cantidad: 2
+  precio_unitario: 15000.00
+
+detalle_tres:
+  pedido: pedido_dos
+  producto: pastillas_freno
+  cantidad: 1
+  precio_unitario: 45000.00

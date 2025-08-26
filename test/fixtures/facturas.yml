@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+factura_uno:
+  numero_factura: "F001-2025"
+  fecha_factura: <%= 1.day.ago %>
+  subtotal: 120000.00
+  impuestos: 22800.00
+  total: 142800.00
+  metodo_pago: "Efectivo"
+  estado: "Pagada"
+  cliente: cliente_uno
+  user: one
+
+factura_dos:
+  numero_factura: "F002-2025"
+  fecha_factura: <%= Time.current %>
+  subtotal: 75000.00
+  impuestos: 14250.00
+  total: 89250.00
+  metodo_pago: "Tarjeta"
+  estado: "Pendiente"
+  cliente: cliente_dos
+  user: one

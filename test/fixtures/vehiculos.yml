@@ -1,0 +1,28 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+moto_uno:
+  matricula: "ABC123"
+  modelo: "XTZ 250"
+  marca: "Yamaha"
+  anio: 2020
+  color: "Azul"
+  descripcion: "Motocicleta en excelente estado"
+  cliente: cliente_uno
+
+moto_dos:
+  matricula: "DEF456"
+  modelo: "CB 125F"
+  marca: "Honda"
+  anio: 2019
+  color: "Rojo"
+  descripcion: "Motocicleta con mantenimiento al día"
+  cliente: cliente_dos
+
+moto_tres:
+  matricula: "GHI789"
+  modelo: "FZ 16"
+  marca: "Yamaha"
+  anio: 2021
+  color: "Negro"
+  descripcion: "Motocicleta deportiva"
+  cliente: cliente_tres

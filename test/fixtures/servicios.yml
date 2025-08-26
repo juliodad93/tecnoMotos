@@ -1,0 +1,35 @@
+cambio_aceite:
+  nombre: Cambio de Aceite Completo
+  descripcion: Cambio de aceite del motor, filtro de aceite y revisión básica
+  precio_base: 45000.00
+  duracion_estimada: 45
+  categoria: Mantenimiento
+  activo: true
+  fecha_registro: <%= 1.month.ago %>
+
+revision_frenos:
+  nombre: Revisión y Ajuste de Frenos
+  descripcion: Inspección completa del sistema de frenos, ajuste y cambio de pastillas si es necesario
+  precio_base: 75000.00
+  duracion_estimada: 90
+  categoria: Seguridad
+  activo: true
+  fecha_registro: <%= 3.weeks.ago %>
+
+mantenimiento_preventivo:
+  nombre: Mantenimiento Preventivo Básico
+  descripcion: Revisión general de la motocicleta incluyendo aceite, frenos, luces y cadena
+  precio_base: 120000.00
+  duracion_estimada: 120
+  categoria: Mantenimiento
+  activo: true
+  fecha_registro: <%= 2.weeks.ago %>
+
+servicio_suspendido:
+  nombre: Servicio Suspendido
+  descripcion: Este servicio está temporalmente suspendido
+  precio_base: 50000.00
+  duracion_estimada: 60
+  categoria: Reparación
+  activo: false
+  fecha_registro: <%= 1.week.ago %>

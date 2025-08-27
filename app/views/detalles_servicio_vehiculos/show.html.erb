@@ -1,0 +1,253 @@
+<% content_for :title, "Detalle del Servicio" %>
+
+<style>
+  svg[width="16"] { width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important; }
+  svg[width="20"] { width: 20px !important; height: 20px !important; max-width: 20px !important; max-height: 20px !important; }
+  svg[width="48"] { width: 48px !important; height: 48px !important; max-width: 48px !important; max-height: 48px !important; }
+  svg { flex-shrink: 0 !important; }
+</style>
+
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <!-- Header -->
+  <div class="flex justify-between items-start mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Detalle del Servicio Aplicado</h1>
+      <p class="text-gray-600 mt-1">Información completa del servicio ejecutado</p>
+    </div>
+    <div class="flex space-x-3">
+      <% if @puede_cerrar %>
+        <%= link_to "🔧 Registrar Productos y Cerrar", cerrar_servicio_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
+            class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition" %>
+      <% elsif @detalle_servicio_vehiculo.completado? %>
+        <%= link_to "🧾 Crear Factura", crear_desde_servicio_facturas_path(servicio_id: @detalle_servicio_vehiculo.id), 
+            method: :post,
+            class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition" %>
+      <% end %>
+      <%= link_to "Editar", edit_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
+          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition" %>
+    </div>
+  </div>
+
+  <!-- Estado del servicio -->
+  <div class="mb-6">
+    <% if @detalle_servicio_vehiculo.en_progreso? %>
+      <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+        <svg width="16" height="16" style="width: 16px; height: 16px;" class="mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        En Progreso
+      </div>
+    <% else %>
+      <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+        <svg width="16" height="16" style="width: 16px; height: 16px;" class="mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Completado
+      </div>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Información del Servicio -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+        <svg width="20" height="20" style="width: 20px; height: 20px;" class="mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Información del Servicio
+      </h2>
+      
+      <dl class="grid grid-cols-1 gap-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Nombre del Servicio</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold"><%= @detalle_servicio_vehiculo.servicio.nombre %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Categoría</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @detalle_servicio_vehiculo.servicio.categoria %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Precio Base</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= number_to_currency(@detalle_servicio_vehiculo.servicio.precio_base) %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Duración Estimada</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <% if @detalle_servicio_vehiculo.servicio.duracion_estimada %>
+              <%= @detalle_servicio_vehiculo.servicio.duracion_estimada %> minutos
+            <% else %>
+              No especificada
+            <% end %>
+          </dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Descripción del Servicio</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @detalle_servicio_vehiculo.servicio.descripcion.present? ? @detalle_servicio_vehiculo.servicio.descripcion : "Sin descripción" %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Información del Vehículo -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+        <svg width="20" height="20" style="width: 20px; height: 20px;" class="mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2v0a2 2 0 01-2 2H8a2 2 0 01-2-2v0a2 2 0 01-2-2V9a2 2 0 012-2h2z"></path>
+        </svg>
+        Información del Vehículo
+      </h2>
+      
+      <dl class="grid grid-cols-1 gap-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Matrícula</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold"><%= @detalle_servicio_vehiculo.vehiculo.matricula %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Marca y Modelo</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @detalle_servicio_vehiculo.vehiculo.marca %> <%= @detalle_servicio_vehiculo.vehiculo.modelo %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Año</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @detalle_servicio_vehiculo.vehiculo.anio %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Color</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @detalle_servicio_vehiculo.vehiculo.color %></dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Propietario</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= @detalle_servicio_vehiculo.cliente.nombre %> <%= @detalle_servicio_vehiculo.cliente.apellido %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Información del Trabajo Realizado -->
+  <div class="mt-6 bg-white shadow rounded-lg p-6">
+    <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+      <svg width="20" height="20" style="width: 20px; height: 20px;" class="mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+      </svg>
+      Detalles del Trabajo
+    </h2>
+    
+    <dl class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Descripción del Trabajo</dt>
+        <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md">
+          <%= simple_format(@detalle_servicio_vehiculo.descripcion) %>
+        </dd>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Fecha de Inicio</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold">
+            <%= @detalle_servicio_vehiculo.fecha_inicio.strftime("%d de %B de %Y a las %H:%M") %>
+          </dd>
+        </div>
+        
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Fecha de Finalización</dt>
+          <dd class="mt-1 text-sm text-gray-900 font-semibold">
+            <% if @detalle_servicio_vehiculo.fecha_fin %>
+              <%= @detalle_servicio_vehiculo.fecha_fin.strftime("%d de %B de %Y a las %H:%M") %>
+            <% else %>
+              <span class="text-yellow-600">Servicio en progreso</span>
+            <% end %>
+          </dd>
+        </div>
+        
+        <% if @detalle_servicio_vehiculo.completado? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Duración Total</dt>
+            <dd class="mt-1 text-sm text-gray-900 font-semibold">
+              <%= @detalle_servicio_vehiculo.duracion_horas %> horas
+              (<%= @detalle_servicio_vehiculo.duracion_minutos %> minutos)
+            </dd>
+          </div>
+        <% end %>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Productos utilizados (solo si el servicio está cerrado) -->
+  <% if @detalle_servicio_vehiculo.fecha_fin.present? && @detalle_servicio_vehiculo.servicio.detalles_servicio_productos.any? %>
+    <div class="mt-6 bg-white shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+        <svg width="20" height="20" style="width: 20px; height: 20px;" class="mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        Productos Utilizados
+      </h2>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unit.</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @detalle_servicio_vehiculo.servicio.detalles_servicio_productos.each do |detalle| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900"><%= detalle.producto.nombre %></div>
+                  <div class="text-sm text-gray-500">SKU: <%= detalle.producto.sku %></div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= detalle.cantidad_usada %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= number_to_currency(detalle.precio_unitario) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= number_to_currency(detalle.total) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot class="bg-gray-50">
+            <tr>
+              <td colspan="3" class="px-6 py-3 text-right font-medium text-gray-900">Total Productos:</td>
+              <td class="px-6 py-3 font-bold text-gray-900">
+                <%= number_to_currency(@detalle_servicio_vehiculo.servicio.detalles_servicio_productos.sum(&:total)) %>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Botones de acción -->
+  <div class="mt-6 flex justify-between">
+    <%= link_to "← Volver a la Lista", detalles_servicio_vehiculos_path, 
+        class: "text-gray-600 hover:text-gray-900 font-medium" %>
+    
+    <div class="flex space-x-3">
+      <%= link_to "Ver Vehículo", @detalle_servicio_vehiculo.vehiculo, 
+          class: "text-blue-600 hover:text-blue-900 font-medium" %>
+      <%= link_to "Ver Cliente", @detalle_servicio_vehiculo.cliente, 
+          class: "text-blue-600 hover:text-blue-900 font-medium" %>
+      <%= link_to "Eliminar", detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
+          method: :delete,
+          data: { confirm: "¿Estás seguro de eliminar este detalle de servicio?" },
+          class: "text-red-600 hover:text-red-900 font-medium" %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,216 @@
+<div class="bg-white rounded-lg shadow border p-6">
+  <%= form_with model: [@factura, @detalle_factura], local: true, class: "space-y-6" do |form| %>
+    <% if @detalle_factura.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex">
+          <svg class="w-5 h-5 text-red-400 mr-2" style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <div>
+            <h3 class="text-sm font-medium text-red-800">
+              <%= pluralize(@detalle_factura.errors.count, "error") %> impidieron guardar el detalle:
+            </h3>
+            <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+              <% @detalle_factura.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Información del detalle -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Información del Detalle</h3>
+        
+        <div>
+          <%= form.label :descripcion, "Descripción", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :descripcion, 
+                             class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                             placeholder: "Descripción del producto o servicio" %>
+        </div>
+
+        <!-- Selector de tipo -->
+        <div>
+          <%= form.label :tipo_item, "Tipo", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :tipo_item, 
+                         options_for_select([
+                           ['Producto', 'producto'],
+                           ['Servicio', 'servicio'],
+                           ['Trabajo de Servicio', 'servicio_vehiculo']
+                         ], @detalle_factura.tipo_item), 
+                         { prompt: "Seleccionar tipo" }, 
+                         { 
+                           class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                           id: "tipo_item_select",
+                           onchange: "toggleItemFields()"
+                         } %>
+        </div>
+
+        <!-- Selector de producto (solo si tipo = producto) -->
+        <div id="producto_field" style="display: none;">
+          <%= form.label :producto_id, "Producto", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :producto_id, 
+                         options_from_collection_for_select(@productos || [], :id, :nombre, @detalle_factura.producto_id), 
+                         { prompt: "Seleccionar producto" }, 
+                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+        </div>
+
+        <!-- Selector de servicio (solo si tipo = servicio) -->
+        <div id="servicio_field" style="display: none;">
+          <%= form.label :servicio_id, "Servicio", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :servicio_id, 
+                         options_from_collection_for_select(@servicios || [], :id, :nombre, @detalle_factura.servicio_id), 
+                         { prompt: "Seleccionar servicio" }, 
+                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+        </div>
+
+        <!-- Selector de trabajo de servicio (solo si tipo = servicio_vehiculo) -->
+        <div id="servicio_vehiculo_field" style="display: none;">
+          <%= form.label :detalle_servicio_vehiculo_id, "Trabajo de Servicio", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :detalle_servicio_vehiculo_id, 
+                         options_from_collection_for_select(@trabajos_facturables || [], :id, 
+                           proc { |t| "#{t.vehiculo.placa} - #{t.descripcion} (#{t.duracion_horas}h)" }, 
+                           @detalle_factura.detalle_servicio_vehiculo_id), 
+                         { prompt: "Seleccionar trabajo completado" }, 
+                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+          <p class="text-xs text-gray-500 mt-1">Solo se muestran trabajos completados y no facturados</p>
+        </div>
+
+        <div>
+          <%= form.label :cantidad, "Cantidad", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :cantidad, 
+                               min: 1, 
+                               value: @detalle_factura.cantidad || 1,
+                               id: "cantidad_field",
+                               class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          <p class="text-xs text-gray-500 mt-1" id="cantidad_help">Para servicios, la cantidad siempre es 1</p>
+        </div>
+      </div>
+
+      <!-- Información de precio -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900">Información de Precio</h3>
+        
+        <div>
+          <%= form.label :costo_item, "Precio Unitario", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :costo_item, 
+                               step: 0.01, 
+                               class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                               placeholder: "0.00",
+                               id: "costo_item_field" %>
+        </div>
+
+        <div>
+          <%= form.label :subtotal, "Subtotal", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :subtotal, 
+                               step: 0.01, 
+                               readonly: true,
+                               class: "w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 text-gray-500",
+                               placeholder: "Se calcula automáticamente" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-end gap-2 pt-4 border-t border-gray-200">
+      <%= link_to @factura, class: "bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+        Cancelar
+      <% end %>
+      <%= form.submit @detalle_factura.new_record? ? "Agregar Detalle" : "Actualizar Detalle", 
+                     class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+function toggleItemFields() {
+  const tipoSelect = document.getElementById('tipo_item_select');
+  const productoField = document.getElementById('producto_field');
+  const servicioField = document.getElementById('servicio_field');
+  const servicioVehiculoField = document.getElementById('servicio_vehiculo_field');
+  const cantidadField = document.getElementById('cantidad_field');
+  const cantidadHelp = document.getElementById('cantidad_help');
+  
+  // Ocultar todos los campos primero
+  productoField.style.display = 'none';
+  servicioField.style.display = 'none';
+  if (servicioVehiculoField) servicioVehiculoField.style.display = 'none';
+  
+  if (tipoSelect.value === 'producto') {
+    productoField.style.display = 'block';
+    cantidadField.readOnly = false;
+    cantidadField.style.backgroundColor = '';
+    cantidadHelp.style.display = 'none';
+    
+    // Limpiar otros campos
+    const servicioSelect = servicioField.querySelector('select');
+    const servicioVehiculoSelect = servicioVehiculoField?.querySelector('select');
+    if (servicioSelect) servicioSelect.value = '';
+    if (servicioVehiculoSelect) servicioVehiculoSelect.value = '';
+    
+  } else if (tipoSelect.value === 'servicio') {
+    servicioField.style.display = 'block';
+    cantidadField.value = 1;
+    cantidadField.readOnly = true;
+    cantidadField.style.backgroundColor = '#f9fafb';
+    cantidadHelp.style.display = 'block';
+    
+    // Limpiar otros campos
+    const productoSelect = productoField.querySelector('select');
+    const servicioVehiculoSelect = servicioVehiculoField?.querySelector('select');
+    if (productoSelect) productoSelect.value = '';
+    if (servicioVehiculoSelect) servicioVehiculoSelect.value = '';
+    
+  } else if (tipoSelect.value === 'servicio_vehiculo' && servicioVehiculoField) {
+    servicioVehiculoField.style.display = 'block';
+    cantidadField.value = 1;
+    cantidadField.readOnly = true;
+    cantidadField.style.backgroundColor = '#f9fafb';
+    cantidadHelp.innerHTML = 'Para trabajos de servicio, la cantidad siempre es 1';
+    cantidadHelp.style.display = 'block';
+    
+    // Limpiar otros campos
+    const productoSelect = productoField.querySelector('select');
+    const servicioSelect = servicioField.querySelector('select');
+    if (productoSelect) productoSelect.value = '';
+    if (servicioSelect) servicioSelect.value = '';
+    
+  } else {
+    cantidadField.readOnly = false;
+    cantidadField.style.backgroundColor = '';
+    cantidadHelp.style.display = 'none';
+  }
+  
+  calcularSubtotal();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const cantidadField = document.getElementById('cantidad_field');
+  const costoItemField = document.getElementById('costo_item_field');
+  const subtotalField = document.getElementById('detalle_factura_subtotal');
+
+  function calcularSubtotal() {
+    const cantidad = parseFloat(cantidadField.value) || 0;
+    const costoItem = parseFloat(costoItemField.value) || 0;
+    const subtotal = cantidad * costoItem;
+    subtotalField.value = subtotal.toFixed(2);
+  }
+  
+  // Hacer calcularSubtotal global para uso en toggleItemFields
+  window.calcularSubtotal = calcularSubtotal;
+
+  if (cantidadField && costoItemField && subtotalField) {
+    cantidadField.addEventListener('input', calcularSubtotal);
+    costoItemField.addEventListener('input', calcularSubtotal);
+    
+    // Calcular al cargar si hay valores
+    calcularSubtotal();
+  }
+  
+  // Inicializar vista basada en el tipo actual
+  toggleItemFields();
+});
+</script>

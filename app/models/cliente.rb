@@ -5,4 +5,8 @@ class Cliente < ApplicationRecord
   validates :nombre, :apellido, :identificacion, presence: true
   validates :identificacion, uniqueness: true
   validates :correo, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
+  
+  def nombre_completo
+    "#{nombre} #{apellido}"
+  end
 end

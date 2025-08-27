@@ -53,4 +53,18 @@ class User < ApplicationRecord
       ['Administrativo', 'administrativo']
     ]
   end
+
+  # Método de clase para obtener las opciones del select (sin administrador)
+  def self.cargo_options_no_admin
+    [
+      ['Técnico', 'tecnico'],
+      ['Comercial', 'comercial'],
+      ['Administrativo', 'administrativo']
+    ]
+  end
+
+  # Método para verificar si el usuario es administrador
+  def admin?
+    cargo == 'administrador'
+  end
 end

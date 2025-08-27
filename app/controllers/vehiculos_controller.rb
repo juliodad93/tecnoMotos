@@ -4,6 +4,7 @@ class VehiculosController < ApplicationController
 
   def index
     @vehiculos = Vehiculo.includes(:cliente).all
+    @clientes = Cliente.order(:nombre, :apellido)
   end
 
   def show

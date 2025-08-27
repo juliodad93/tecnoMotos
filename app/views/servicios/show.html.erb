@@ -1,0 +1,200 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to servicios_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Servicios
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @servicio.nombre %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center">
+              <span class="text-white font-bold text-2xl">🔧</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                <%= @servicio.nombre %>
+              </h1>
+              <p class="text-sm text-gray-600 flex items-center space-x-4">
+                <% if @servicio.categoria.present? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    <%= @servicio.categoria.titleize %>
+                  </span>
+                <% end %>
+                <span>•</span>
+                <% if @servicio.activo? %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    ✅ Activo
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    ❌ Inactivo
+                  </span>
+                <% end %>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3">
+            <%= link_to "Editar", edit_servicio_path(@servicio), 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= link_to "Eliminar", servicio_path(@servicio), method: :delete,
+                data: { confirm: "¿Estás seguro de que quieres eliminar #{@servicio.nombre}?" },
+                class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Información del Servicio -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Servicio</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @servicio.nombre %></dd>
+              </div>
+              <% if @servicio.descripcion.present? %>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Descripción</dt>
+                  <dd class="mt-1 text-sm text-gray-900 leading-relaxed"><%= simple_format(@servicio.descripcion) %></dd>
+                </div>
+              <% end %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Categoría</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% if @servicio.categoria.present? %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                      <%= @servicio.categoria.titleize %>
+                    </span>
+                  <% else %>
+                    <span class="text-gray-400">Sin categoría</span>
+                  <% end %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Estado</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% if @servicio.activo? %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      ✅ Activo
+                    </span>
+                  <% else %>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      ❌ Inactivo
+                    </span>
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Precios y Tiempo -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Precios y Tiempo</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Precio Base</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-2xl font-bold text-green-600">$<%= number_with_precision(@servicio.precio_base, precision: 2) %></span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Duración Estimada</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% if @servicio.duracion_estimada.present? %>
+                    <div class="flex items-center space-x-2">
+                      <span class="text-lg font-medium">⏱️ <%= @servicio.duracion_estimada %> minutos</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                      Aproximadamente <%= pluralize((@servicio.duracion_estimada / 60.0).round(1), "hora") %>
+                    </div>
+                  <% else %>
+                    <span class="text-gray-400">No especificado</span>
+                  <% end %>
+                </dd>
+              </div>
+              <% if @servicio.duracion_estimada.present? && @servicio.precio_base.present? %>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Precio por Hora</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <% precio_por_hora = (@servicio.precio_base / (@servicio.duracion_estimada / 60.0)) %>
+                    <span class="text-lg font-medium text-blue-600">$<%= number_with_precision(precio_por_hora, precision: 2) %>/hora</span>
+                  </dd>
+                </div>
+              <% end %>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Estadísticas de uso -->
+        <div class="mt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Estadísticas de Uso</h3>
+          <div class="bg-gray-50 rounded-lg p-6">
+            <div class="grid grid-cols-3 gap-6 text-center">
+              <div>
+                <div class="text-2xl font-bold text-blue-600"><%= @servicio.detalles_facturas.count %></div>
+                <div class="text-sm text-gray-600">Veces Facturado</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-green-600">
+                  $<%= number_with_precision(@servicio.detalles_facturas.sum(:subtotal) || 0, precision: 2) %>
+                </div>
+                <div class="text-sm text-gray-600">Ingresos Generados</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-purple-600">
+                  <%= @servicio.detalles_servicio_vehiculos.count %>
+                </div>
+                <div class="text-sm text-gray-600">Vehículos Atendidos</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del Sistema -->
+        <div class="mt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Sistema</h3>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt class="font-medium text-gray-500">Fecha de Registro</dt>
+                <dd class="text-gray-900">
+                  <%= @servicio.fecha_registro.present? ? @servicio.fecha_registro.strftime("%d de %B de %Y") : "No especificada" %>
+                </dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">Creado en el Sistema</dt>
+                <dd class="text-gray-900"><%= @servicio.created_at.strftime("%d de %B de %Y a las %H:%M") %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">Última Actualización</dt>
+                <dd class="text-gray-900"><%= @servicio.updated_at.strftime("%d de %B de %Y a las %H:%M") %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">ID del Servicio</dt>
+                <dd class="text-gray-900 font-mono">#<%= @servicio.id %></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

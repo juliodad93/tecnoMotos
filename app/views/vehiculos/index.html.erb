@@ -5,16 +5,33 @@
       <div class="px-6 py-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-bold text-gray-900">Todos los Vehículos</h1>
-          <%= link_to "Nuevo Vehículo", new_vehiculo_path, 
-              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          <div class="flex gap-2">
+            <%= link_to "Ver Clientes", clientes_path, 
+                class: "bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <div class="relative">
+              <select id="cliente-selector" onchange="redirectToNewVehiculo()" 
+                      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 appearance-none pr-8">
+                <option value="">Nuevo Vehículo</option>
+                <% @clientes.each do |cliente| %>
+                  <option value="<%= new_cliente_vehiculo_path(cliente) %>">
+                    Para <%= "#{cliente.nombre} #{cliente.apellido}" %>
+                  </option>
+                <% end %>
+              </select>
+              <svg class="absolute right-2 top-3 w-4 h-4 text-white pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Search Bar -->
       <div class="px-6 py-4 bg-gray-50">
         <div class="max-w-md">
-          <input type="search" placeholder="Buscar vehículo..." 
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <input type="search" id="vehiculo-search" placeholder="Buscar vehículo..." 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                 onkeyup="filterVehiculos()">
         </div>
       </div>
 
@@ -30,9 +47,9 @@
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-gray-200" id="vehiculos-tbody">
             <% @vehiculos.each do |vehiculo| %>
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 vehiculo-row" data-search="<%= "#{vehiculo.marca} #{vehiculo.modelo} #{vehiculo.matricula} #{vehiculo.cliente.nombre} #{vehiculo.cliente.apellido} #{vehiculo.anio}".downcase %>">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10">
@@ -88,8 +105,8 @@
           <div class="text-center py-12">
             <div class="text-gray-500">
               <h3 class="text-lg font-medium mb-2">No hay vehículos registrados</h3>
-              <p class="mb-4">Comienza agregando el primer vehículo</p>
-              <%= link_to "Agregar Vehículo", new_vehiculo_path, 
+              <p class="mb-4">Comienza agregando el primer vehículo a un cliente</p>
+              <%= link_to "Ver Clientes", clientes_path, 
                   class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
             </div>
           </div>
@@ -98,3 +115,61 @@
     </div>
   </div>
 </div>
+
+<script>
+function redirectToNewVehiculo() {
+  const selector = document.getElementById('cliente-selector');
+  const url = selector.value;
+  if (url) {
+    window.location.href = url;
+    // Reset selector
+    selector.value = '';
+  }
+}
+
+function filterVehiculos() {
+  const searchTerm = document.getElementById('vehiculo-search').value.toLowerCase();
+  const rows = document.querySelectorAll('.vehiculo-row');
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const searchData = row.getAttribute('data-search');
+    if (searchData.includes(searchTerm)) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  // Show/hide empty state message
+  const emptyMessage = document.querySelector('.text-center.py-12');
+  const tbody = document.getElementById('vehiculos-tbody');
+  
+  if (visibleCount === 0 && searchTerm !== '') {
+    // Create or show "no results" message
+    let noResultsMessage = document.getElementById('no-results-message');
+    if (!noResultsMessage) {
+      noResultsMessage = document.createElement('tr');
+      noResultsMessage.id = 'no-results-message';
+      noResultsMessage.innerHTML = `
+        <td colspan="5" class="px-6 py-12 text-center">
+          <div class="text-gray-500">
+            <h3 class="text-lg font-medium mb-2">No se encontraron vehículos</h3>
+            <p class="mb-4">No hay vehículos que coincidan con "<span id="search-term"></span>"</p>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(noResultsMessage);
+    }
+    document.getElementById('search-term').textContent = searchTerm;
+    noResultsMessage.style.display = '';
+  } else {
+    // Hide "no results" message
+    const noResultsMessage = document.getElementById('no-results-message');
+    if (noResultsMessage) {
+      noResultsMessage.style.display = 'none';
+    }
+  }
+}
+</script>

@@ -4,7 +4,7 @@ class Producto < ApplicationRecord
   belongs_to :proveedor
   has_many :detalles_pedidos, dependent: :destroy
   has_many :detalles_facturas, dependent: :destroy
-  has_many :detalles_servicio_productos, dependent: :destroy
+  has_many :detalles_servicio_productos, class_name: 'DetalleServicioProducto', dependent: :destroy
   
   validates :nombre, presence: true
   validates :sku, presence: true, uniqueness: true

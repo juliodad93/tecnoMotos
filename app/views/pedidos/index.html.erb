@@ -1,0 +1,267 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">📦 Pedidos</h1>
+        <p class="text-gray-600 mt-1">Gestiona los pedidos a proveedores</p>
+      </div>
+      <%= link_to "Nuevo Pedido", new_pedido_path, 
+          class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center space-x-2" %>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white rounded-lg shadow mb-6 p-4">
+      <h3 class="text-sm font-medium text-gray-700 mb-3">Filtros:</h3>
+      
+      <!-- Búsqueda por texto -->
+      <div class="mb-4">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Buscar:</label>
+        <input type="search" id="pedido-search" placeholder="Buscar por pedido, proveedor, responsable..." 
+               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+               onkeyup="filterPedidos()">
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Filtro por estado -->
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Estado:</label>
+          <div class="flex flex-wrap gap-2">
+            <%= link_to "Todos", pedidos_path, 
+                class: "px-3 py-1 rounded-full text-sm font-medium #{params[:estado].blank? ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+            <% @estados.each do |key, value| %>
+              <%= link_to value, pedidos_path(estado: key), 
+                  class: "px-3 py-1 rounded-full text-sm font-medium #{params[:estado] == key ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}" %>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- Filtro por proveedor -->
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Proveedor:</label>
+          <%= form_tag pedidos_path, method: :get, local: true, class: "flex space-x-2" do %>
+            <%= hidden_field_tag :estado, params[:estado] %>
+            <%= select_tag :proveedor_id, 
+                options_from_collection_for_select(@proveedores, :id, :nombre, params[:proveedor_id]),
+                { prompt: "Todos los proveedores", class: "rounded-md border-gray-300 text-sm", onchange: "this.form.submit();" } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div class="bg-white shadow overflow-hidden rounded-lg">
+      <% if @pedidos.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Pedido
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Proveedor
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fecha
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Estado
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Responsable
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="pedidos-tbody">
+              <% @pedidos.each do |pedido| %>
+                <tr class="hover:bg-gray-50 pedido-row" data-search="<%= "#{pedido.nombre_pedido} #{pedido.proveedor_nombre} #{pedido.usuario&.nombre} #{pedido.estado}".downcase %>">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span class="text-white font-bold">📦</span>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">
+                          <%= link_to pedido.nombre_pedido, pedido_path(pedido), 
+                              class: "hover:text-blue-600" %>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                          ID: #<%= pedido.id %>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      <%= link_to proveedore_path(pedido.proveedor), class: "hover:text-blue-600" do %>
+                        🏢 <%= pedido.proveedor_nombre %>
+                      <% end %>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      <%= pedido.proveedor.telefono %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <%= pedido.fecha_pedido.strftime("%d/%m/%Y") %>
+                    <div class="text-xs text-gray-500">
+                      hace <%= pedido.dias_desde_pedido %> días
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <span class="text-lg font-bold text-green-600">
+                      $<%= number_with_precision(pedido.total, precision: 2) %>
+                    </span>
+                    <div class="text-xs text-gray-500">
+                      <%= pedido.total_productos %> productos
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% case pedido.estado %>
+                    <% when 'pendiente' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        ⏳ <%= pedido.estado_humanizado %>
+                      </span>
+                    <% when 'enviado' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        🚚 <%= pedido.estado_humanizado %>
+                      </span>
+                    <% when 'recibido' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        📥 <%= pedido.estado_humanizado %>
+                      </span>
+                    <% when 'completado' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        ✅ <%= pedido.estado_humanizado %>
+                      </span>
+                    <% when 'cancelado' %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        ❌ <%= pedido.estado_humanizado %>
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <%= pedido.estado_humanizado %>
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <%= pedido.usuario_responsable %>
+                    <div class="text-xs text-gray-500">
+                      <%= pedido.user.cargo_humanizado %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <div class="flex items-center justify-center space-x-2">
+                      <%= link_to "Ver", pedido_path(pedido), 
+                          class: "text-blue-600 hover:text-blue-900" %>
+                      <% if pedido.puede_editarse? %>
+                        <%= link_to "Editar", edit_pedido_path(pedido), 
+                            class: "text-indigo-600 hover:text-indigo-900" %>
+                      <% end %>
+                      <% if pedido.puede_cancelarse? %>
+                        <%= link_to "Eliminar", pedido_path(pedido), method: :delete,
+                            data: { confirm: "¿Estás seguro de que quieres eliminar el pedido #{pedido.nombre_pedido}?" },
+                            class: "text-red-600 hover:text-red-900" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">📦</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No hay pedidos registrados</h3>
+          <p class="text-gray-600 mb-6">Comienza creando el primer pedido a un proveedor</p>
+          <%= link_to "Crear Primer Pedido", new_pedido_path, 
+              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <% if @pedidos.any? %>
+      <div class="mt-6 grid grid-cols-5 gap-4">
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-blue-600"><%= @pedidos.count %></div>
+          <div class="text-sm text-gray-600">Total Pedidos</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-green-600">
+            $<%= number_with_precision(@pedidos.sum(:total), precision: 0) %>
+          </div>
+          <div class="text-sm text-gray-600">Total Ordenado</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-yellow-600"><%= @pedidos.pendientes.count %></div>
+          <div class="text-sm text-gray-600">Pendientes</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-purple-600"><%= @pedidos.completados.count %></div>
+          <div class="text-sm text-gray-600">Completados</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-indigo-600">
+            $<%= number_with_precision(@pedidos.average(:total) || 0, precision: 0) %>
+          </div>
+          <div class="text-sm text-gray-600">Promedio</div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function filterPedidos() {
+  const searchTerm = document.getElementById('pedido-search').value.toLowerCase();
+  const rows = document.querySelectorAll('.pedido-row');
+  let visibleCount = 0;
+  
+  rows.forEach(row => {
+    const searchData = row.getAttribute('data-search');
+    if (searchData.includes(searchTerm)) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+  
+  // Show/hide empty state message
+  const tbody = document.getElementById('pedidos-tbody');
+  
+  if (visibleCount === 0 && searchTerm !== '') {
+    // Create or show "no results" message
+    let noResultsMessage = document.getElementById('no-results-message');
+    if (!noResultsMessage) {
+      noResultsMessage = document.createElement('tr');
+      noResultsMessage.id = 'no-results-message';
+      noResultsMessage.innerHTML = `
+        <td colspan="7" class="px-6 py-12 text-center">
+          <div class="text-gray-500">
+            <h3 class="text-lg font-medium mb-2">No se encontraron pedidos</h3>
+            <p class="mb-4">No hay pedidos que coincidan con "<span id="search-term"></span>"</p>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(noResultsMessage);
+    }
+    document.getElementById('search-term').textContent = searchTerm;
+    noResultsMessage.style.display = '';
+  } else {
+    // Hide "no results" message
+    const noResultsMessage = document.getElementById('no-results-message');
+    if (noResultsMessage) {
+      noResultsMessage.style.display = 'none';
+    }
+  }
+}
+</script>

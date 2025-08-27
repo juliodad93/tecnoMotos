@@ -1,0 +1,281 @@
+<% content_for :title, "Factura ##{@factura.numero_factura}" %>
+
+<div class="max-w-4xl mx-auto px-4 py-6">
+  <div class="bg-white rounded-lg shadow border overflow-hidden">
+    <!-- Header de la factura -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Factura #<%= @factura.numero_factura %></h1>
+          <p class="text-sm text-gray-600 mt-1">
+            Fecha: <%= @factura.fecha_factura.strftime('%d de %B de %Y') %>
+          </p>
+        </div>
+        <div class="text-right">
+          <% case @factura.estado %>
+          <% when 'pendiente' %>
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800">
+              Pendiente
+            </span>
+          <% when 'pagada' %>
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+              Pagada
+            </span>
+            <%# if @factura.fecha_pago %>
+              <%# <p class="text-xs text-gray-500 mt-1">
+                Pagada el: <%= @factura.fecha_pago.strftime('%d/%m/%Y') %>
+              </p> %>
+            <%# end %>
+          <% when 'anulada' %>
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+              Anulada
+            </span>
+            <%# if @factura.fecha_anulacion %>
+              <%# <p class="text-xs text-gray-500 mt-1">
+                Anulada el: <%= @factura.fecha_anulacion.strftime('%d/%m/%Y') %>
+              </p> %>
+            <%# end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <!-- Información del cliente y empresa -->
+    <div class="px-6 py-4 grid grid-cols-2 gap-6">
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Cliente</h3>
+        <div class="text-sm text-gray-900">
+          <p class="font-medium"><%= "#{@factura.cliente.nombre} #{@factura.cliente.apellido}" %></p>
+          <p><%= @factura.cliente.correo %></p>
+          <p><%= @factura.cliente.telefono %></p>
+          <% if @factura.cliente.direccion.present? %>
+            <p><%= @factura.cliente.direccion %></p>
+          <% end %>
+        </div>
+      </div>
+      
+      <div>
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">TecnoMotos</h3>
+        <div class="text-sm text-gray-900">
+          <p class="font-medium">Taller de Motocicletas</p>
+          <p>info@tecnomotos.com</p>
+          <p>+57 300 123 4567</p>
+          <p>Calle Principal #123, Ciudad</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalles de la factura -->
+    <div class="px-6 py-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-medium text-gray-900">Detalles de la Factura</h3>
+        <% unless @factura.anulada? || @factura.pagada? %>
+          <%= link_to new_factura_detalle_factura_path(@factura), class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors" do %>
+            <svg class="w-4 h-4 inline mr-1" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Agregar Detalle
+          <% end %>
+        <% end %>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Descripción
+              </th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Cantidad
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Precio Unitario
+              </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Subtotal
+              </th>
+              <% unless @factura.anulada? || @factura.pagada? %>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @detalles.empty? %>
+              <tr>
+                <td colspan="<%= @factura.anulada? || @factura.pagada? ? '4' : '5' %>" class="px-6 py-8 text-center text-gray-500">
+                  No hay detalles registrados para esta factura
+                </td>
+              </tr>
+            <% else %>
+              <% @detalles.each do |detalle| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      <%= detalle.descripcion %>
+                    </div>
+                    <% if detalle.producto %>
+                      <div class="text-xs text-gray-500">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Producto
+                        </span>
+                        <%= detalle.producto.nombre %>
+                      </div>
+                    <% elsif detalle.servicio %>
+                      <div class="text-xs text-gray-500">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Servicio
+                        </span>
+                        <%= detalle.servicio.nombre %>
+                      </div>
+                    <% elsif detalle.detalle_servicio_vehiculo %>
+                      <div class="text-xs text-gray-500">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          Trabajo de Servicio
+                        </span>
+                        <div class="mt-1">
+                          <strong>Vehículo:</strong> <%= detalle.detalle_servicio_vehiculo.vehiculo.placa %><br>
+                          <strong>Duración:</strong> <%= detalle.detalle_servicio_vehiculo.duracion_horas %>h
+                        </div>
+                      </div>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-900">
+                    <%= detalle.cantidad %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    $<%= number_with_delimiter(detalle.costo_item, delimiter: ",") %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
+                    $<%= number_with_delimiter(detalle.subtotal, delimiter: ",") %>
+                  </td>
+                  <% unless @factura.anulada? || @factura.pagada? %>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                      <div class="flex justify-center gap-2">
+                        <%= link_to [@factura, detalle], class: "text-blue-600 hover:text-blue-900" do %>
+                          <svg class="w-4 h-4" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                          </svg>
+                        <% end %>
+                        
+                        <%= link_to edit_factura_detalle_factura_path(@factura, detalle), class: "text-indigo-600 hover:text-indigo-900" do %>
+                          <svg class="w-4 h-4" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                          </svg>
+                        <% end %>
+                        
+                        <%= link_to [@factura, detalle], method: :delete, 
+                                   data: { confirm: '¿Está seguro de eliminar este detalle?' },
+                                   class: "text-red-600 hover:text-red-900" do %>
+                          <svg class="w-4 h-4" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                          </svg>
+                        <% end %>
+                      </div>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Totales -->
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <div class="flex justify-end">
+        <div class="w-64">
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Subtotal:</span>
+            <span>$<%= number_with_delimiter(@factura.subtotal, delimiter: ",") %></span>
+          </div>
+          <% if @factura.impuestos > 0 %>
+            <div class="flex justify-between text-sm text-gray-600 mb-2">
+              <span>Impuestos:</span>
+              <span>$<%= number_with_delimiter(@factura.impuestos, delimiter: ",") %></span>
+            </div>
+          <% end %>
+          <div class="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-200">
+            <span>Total:</span>
+            <span>$<%= number_with_delimiter(@factura.total, delimiter: ",") %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="px-6 py-4 border-t border-gray-200">
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="font-medium text-gray-500">Método de Pago:</span>
+          <span class="text-gray-900 ml-2"><%= @factura.metodo_pago&.humanize %></span>
+        </div>
+        <div>
+          <span class="font-medium text-gray-500">Usuario:</span>
+          <span class="text-gray-900 ml-2"><%= @factura.user.nombre %></span>
+        </div>
+      </div>
+      
+      <!-- Campo observaciones removido - no existe en la base de datos -->
+    </div>
+
+    <!-- Acciones -->
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <div class="flex justify-between items-center">
+        <div class="flex gap-2">
+          <%= link_to facturas_path, class: "bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+            <svg class="w-4 h-4 inline mr-2" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver a Facturas
+          <% end %>
+        </div>
+        
+        <div class="flex gap-2">
+          <% if @factura.pendiente? %>
+            <%= link_to marcar_como_pagada_factura_path(@factura), method: :patch, 
+                       data: { confirm: '¿Marcar esta factura como pagada?' },
+                       class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+              <svg class="w-4 h-4 inline mr-2" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Marcar como Pagada
+            <% end %>
+            
+            <%= link_to anular_factura_path(@factura), method: :patch, 
+                       data: { confirm: '¿Está seguro de anular esta factura?' },
+                       class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+              <svg class="w-4 h-4 inline mr-2" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              Anular Factura
+            <% end %>
+          <% end %>
+          
+          <% unless @factura.anulada? || @factura.pagada? %>
+            <%= link_to edit_factura_path(@factura), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+              <svg class="w-4 h-4 inline mr-2" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              Editar
+            <% end %>
+          <% end %>
+          
+          <% unless @factura.pagada? %>
+            <%= link_to @factura, method: :delete, 
+                       data: { confirm: '¿Está seguro de eliminar esta factura?' },
+                       class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" do %>
+              <svg class="w-4 h-4 inline mr-2" style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Eliminar
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

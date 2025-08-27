@@ -1,0 +1,268 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-5xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to pedidos_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Pedidos
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @pedido.nombre_pedido %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center">
+              <span class="text-white font-bold text-2xl">📦</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                Pedido <%= @pedido.nombre_pedido %>
+              </h1>
+              <p class="text-sm text-gray-600 flex items-center space-x-4">
+                <span>Proveedor: <%= @pedido.proveedor_nombre %></span>
+                <span>•</span>
+                <% case @pedido.estado %>
+                <% when 'pendiente' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    ⏳ <%= @pedido.estado_humanizado %>
+                  </span>
+                <% when 'enviado' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    🚚 <%= @pedido.estado_humanizado %>
+                  </span>
+                <% when 'recibido' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    📥 <%= @pedido.estado_humanizado %>
+                  </span>
+                <% when 'completado' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    ✅ <%= @pedido.estado_humanizado %>
+                  </span>
+                <% when 'cancelado' %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    ❌ <%= @pedido.estado_humanizado %>
+                  </span>
+                <% end %>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3">
+            <% if @pedido.puede_editarse? %>
+              <%= link_to "Editar", edit_pedido_path(@pedido), 
+                  class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <% end %>
+            <% if @pedido.puede_cancelarse? %>
+              <%= link_to "Eliminar", pedido_path(@pedido), method: :delete,
+                  data: { confirm: "¿Estás seguro de que quieres eliminar el pedido #{@pedido.nombre_pedido}?" },
+                  class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Información del Pedido -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Pedido</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre del Pedido</dt>
+                <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @pedido.nombre_pedido %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Fecha del Pedido</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @pedido.fecha_pedido.strftime("%d de %B de %Y") %>
+                  <span class="text-xs text-gray-500">(hace <%= @pedido.dias_desde_pedido %> días)</span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Proveedor</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= link_to proveedore_path(@pedido.proveedor), class: "text-blue-600 hover:text-blue-800" do %>
+                    🏢 <%= @pedido.proveedor_nombre %>
+                  <% end %>
+                  <div class="text-xs text-gray-500 mt-1">
+                    Tel: <%= @pedido.proveedor.telefono %> | Email: <%= @pedido.proveedor.email %>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Usuario Responsable</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  👤 <%= @pedido.usuario_responsable %>
+                  <span class="text-xs text-gray-500">(<%= @pedido.user.cargo_humanizado %>)</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Información del Estado -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Estado y Total</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Estado Actual</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% case @pedido.estado %>
+                  <% when 'pendiente' %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                      ⏳ <%= @pedido.estado_humanizado %>
+                    </span>
+                  <% when 'enviado' %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                      🚚 <%= @pedido.estado_humanizado %>
+                    </span>
+                  <% when 'recibido' %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                      📥 <%= @pedido.estado_humanizado %>
+                    </span>
+                  <% when 'completado' %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                      ✅ <%= @pedido.estado_humanizado %>
+                    </span>
+                  <% when 'cancelado' %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                      ❌ <%= @pedido.estado_humanizado %>
+                    </span>
+                  <% end %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Total del Pedido</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-2xl font-bold text-green-600">$<%= number_with_precision(@pedido.total, precision: 2) %></span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Cantidad de Productos</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-lg font-medium"><%= @pedido.total_productos %></span> productos
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Tiempo Transcurrido</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @pedido.dias_desde_pedido %> días desde el pedido
+                  <% if @pedido.esta_pendiente? && @pedido.dias_desde_pedido > 7 %>
+                    <div class="text-xs text-yellow-600 mt-1">⚠️ Pedido con más de 7 días pendiente</div>
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Detalles del Pedido -->
+        <div class="mt-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Productos del Pedido</h3>
+            <% unless @pedido.esta_completado? || @pedido.esta_cancelado? %>
+              <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                + Agregar Producto
+              </button>
+            <% end %>
+          </div>
+          
+          <% if @detalles.any? %>
+            <div class="bg-gray-50 rounded-lg overflow-hidden">
+              <table class="min-w-full">
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio Unit.</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <% @detalles.each do |detalle| %>
+                    <tr>
+                      <td class="px-4 py-3 text-sm text-gray-900">
+                        <%= link_to producto_path(detalle.producto), class: "text-blue-600 hover:text-blue-800" do %>
+                          📦 <%= detalle.producto.nombre %>
+                        <% end %>
+                        <div class="text-xs text-gray-500">SKU: <%= detalle.producto.sku %></div>
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-900 font-medium"><%= detalle.cantidad %></td>
+                      <td class="px-4 py-3 text-sm text-gray-900">$<%= number_with_precision(detalle.precio_unitario, precision: 2) %></td>
+                      <td class="px-4 py-3 text-sm text-gray-900 font-medium">
+                        $<%= number_with_precision(detalle.cantidad * detalle.precio_unitario, precision: 2) %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <tfoot class="bg-gray-100">
+                  <tr>
+                    <td colspan="3" class="px-4 py-3 text-sm font-medium text-gray-900">Total del Pedido:</td>
+                    <td class="px-4 py-3 text-sm font-bold text-green-600">
+                      $<%= number_with_precision(@detalles.sum { |d| d.cantidad * d.precio_unitario }, precision: 2) %>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          <% else %>
+            <div class="bg-gray-50 rounded-lg p-8 text-center">
+              <div class="text-4xl mb-2">📋</div>
+              <h4 class="text-sm font-medium text-gray-900 mb-1">Sin productos</h4>
+              <p class="text-xs text-gray-500">Este pedido no tiene productos agregados</p>
+              <% unless @pedido.esta_completado? || @pedido.esta_cancelado? %>
+                <button class="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                  Agregar Primer Producto
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Información del Sistema -->
+        <div class="mt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Sistema</h3>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt class="font-medium text-gray-500">Creado</dt>
+                <dd class="text-gray-900"><%= @pedido.created_at.strftime("%d de %B de %Y a las %H:%M") %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">Última Actualización</dt>
+                <dd class="text-gray-900"><%= @pedido.updated_at.strftime("%d de %B de %Y a las %H:%M") %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">ID del Pedido</dt>
+                <dd class="text-gray-900 font-mono">#<%= @pedido.id %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">Estado del Sistema</dt>
+                <dd class="text-gray-900">
+                  <% if @pedido.puede_editarse? %>
+                    <span class="text-blue-600">Editable</span>
+                  <% elsif @pedido.esta_completado? %>
+                    <span class="text-green-600">Completado</span>
+                  <% else %>
+                    <span class="text-gray-600">Solo lectura</span>
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

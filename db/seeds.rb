@@ -4,11 +4,66 @@
 
 puts "🌱 Creando datos de ejemplo..."
 
-# Limpiar datos existentes
+# Crear usuario administrador por defecto
+puts "👑 Creando usuario administrador..."
+admin_user = User.find_or_create_by(email_address: "admin@mail") do |user|
+  user.nombre = "Administrador"
+  user.apellido = "del Sistema"
+  user.identificacion = "0000000000"
+  user.telefono = "555-0000"
+  user.direccion = "Oficina Principal"
+  user.cargo = :administrador
+  user.password = "s3cr3t"
+end
+
+if admin_user.persisted?
+  puts "✅ Usuario administrador creado: admin@mail / s3cr3t"
+else
+  puts "❌ Error creando administrador: #{admin_user.errors.full_messages.join(', ')}"
+end
+
+# Crear usuario técnico de prueba
+puts "🔧 Creando usuario técnico..."
+tecnico_user = User.find_or_create_by(email_address: "tecnico@mail") do |user|
+  user.nombre = "Juan Carlos"
+  user.apellido = "Técnico"
+  user.identificacion = "1111111111"
+  user.telefono = "555-1111"
+  user.direccion = "Taller Principal"
+  user.cargo = :tecnico
+  user.password = "s3cr3t"
+end
+
+if tecnico_user.persisted?
+  puts "✅ Usuario técnico creado: tecnico@mail / s3cr3t"
+else
+  puts "❌ Error creando técnico: #{tecnico_user.errors.full_messages.join(', ')}"
+end
+
+# Crear usuario comercial de prueba
+puts "🔧 Creando usuario comercial..."
+comercial_user = User.find_or_create_by(email_address: "comercial@mail") do |user|
+  user.nombre = "Ana María"
+  user.apellido = "Comercial"
+  user.identificacion = "2222222222"
+  user.telefono = "555-1111"
+  user.direccion = "Taller Principal"
+  user.cargo = :comercial
+  user.password = "s3cr3t"
+end
+
+if comercial_user.persisted?
+  puts "✅ Usuario comercial creado: comercial@mail / s3cr3t"
+else
+  puts "❌ Error creando comercial: #{comercial_user.errors.full_messages.join(', ')}"
+end
+
+
+# Limpiar datos existentes (excepto admin y técnico)
 puts "🧹 Limpiando datos existentes..."
 Vehiculo.destroy_all
 Cliente.destroy_all
-User.destroy_all
+User.where.not(email_address: ["admin@mail", "tecnico@mail"]).destroy_all
 
 # Crear clientes de ejemplo
 puts "👥 Creando clientes..."

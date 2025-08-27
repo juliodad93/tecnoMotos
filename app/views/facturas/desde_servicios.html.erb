@@ -1,0 +1,143 @@
+<% content_for :title, "Facturar Servicios Completados" %>
+
+<!-- PROTECCIÓN ANTI-SVG GIGANTE ESPECÍFICA -->
+<style>
+  svg[width="16"] { width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important; }
+  svg[width="20"] { width: 20px !important; height: 20px !important; max-width: 20px !important; max-height: 20px !important; }
+  svg[width="24"] { width: 24px !important; height: 24px !important; max-width: 24px !important; max-height: 24px !important; }
+  svg { flex-shrink: 0 !important; }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <div class="flex items-center mb-6">
+    <%= link_to facturas_path, class: "text-gray-500 hover:text-gray-700 mr-4" do %>
+      <svg class="w-6 h-6" style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+    <% end %>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Facturar Servicios Completados</h1>
+      <p class="text-gray-600 mt-1">Selecciona los trabajos completados para crear facturas</p>
+    </div>
+  </div>
+
+  <% if @trabajos_por_cliente.empty? %>
+    <div class="bg-white rounded-lg shadow border p-12 text-center">
+      <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" style="width: 4rem; height: 4rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No hay servicios por facturar</h3>
+      <p class="text-gray-500">Todos los trabajos completados ya han sido facturados o no hay trabajos completados.</p>
+      <%= link_to "Ver Gestión de Servicios", detalles_servicio_vehiculos_path, 
+                 class: "mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+    </div>
+  <% else %>
+    <div class="space-y-6">
+      <% @trabajos_por_cliente.each do |cliente, trabajos| %>
+        <div class="bg-white rounded-lg shadow border overflow-hidden">
+          <!-- Header del cliente -->
+          <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="text-lg font-medium text-gray-900">
+                  <%= "#{cliente.nombre} #{cliente.apellido}" %>
+                </h3>
+                <p class="text-sm text-gray-600">
+                  <%= cliente.correo %> • <%= cliente.telefono %>
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-500">
+                  <%= pluralize(trabajos.count, 'trabajo') %> pendiente<%= 's' if trabajos.count != 1 %>
+                </p>
+                <p class="text-lg font-medium text-gray-900">
+                  Total: $<%= number_with_delimiter(trabajos.sum { |t| t.duracion_horas * 50000 }, delimiter: ",") %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lista de trabajos -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trabajo
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Vehículo
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fechas
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Duración
+                  </th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Precio Sugerido
+                  </th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <% trabajos.each do |trabajo| %>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">
+                        <%= trabajo.descripcion %>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        Servicio: <%= trabajo.servicio.nombre %>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">
+                        <%= trabajo.vehiculo.placa %>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        <%= "#{trabajo.vehiculo.marca} #{trabajo.vehiculo.modelo}" %>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div><strong>Inicio:</strong> <%= trabajo.fecha_inicio.strftime('%d/%m/%Y %H:%M') %></div>
+                      <div><strong>Fin:</strong> <%= trabajo.fecha_fin.strftime('%d/%m/%Y %H:%M') %></div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= trabajo.duracion_horas %>h
+                      <div class="text-xs text-gray-500">
+                        (<%= trabajo.duracion_minutos %> min)
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
+                      $<%= number_with_delimiter(trabajo.duracion_horas * 50000, delimiter: ",") %>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <%= link_to "Crear Factura", 
+                                 new_factura_path(detalle_servicio_vehiculo_id: trabajo.id),
+                                 class: "bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Footer con acción masiva -->
+          <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+            <div class="flex justify-between items-center">
+              <p class="text-sm text-gray-600">
+                Crear una factura con todos los trabajos de este cliente
+              </p>
+              <%= link_to "Facturar Todo para #{cliente.nombre}", 
+                         new_factura_path(cliente_id: cliente.id, trabajos_ids: trabajos.map(&:id).join(',')),
+                         class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

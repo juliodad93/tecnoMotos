@@ -1,0 +1,221 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-6xl mx-auto px-4">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">🔧 Servicios</h1>
+        <p class="text-gray-600 mt-1">Gestiona los servicios que ofrece el taller</p>
+      </div>
+      <%= link_to "Nuevo Servicio", new_servicio_path,
+          class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 flex items-center space-x-2" %>
+    </div>
+
+    <!-- Filtros por categoría (MODIFICADO PARA JAVASCRIPT) -->
+    <% if @categorias.any? %>
+      <div class="bg-white rounded-lg shadow mb-6 p-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-3">Filtrar por categoría:</h3>
+        <div class="flex flex-wrap gap-2">
+          <!-- CAMBIO: Se reemplaza link_to por button con onclick -->
+          <button onclick="filtrarPorCategoria('todos')" id="btn-filtro-todos"
+                  class="btn-filtro px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            Todos
+          </button>
+          <% @categorias.each do |categoria| %>
+            <!-- CAMBIO: Se reemplaza link_to por button con onclick y se le da un ID único -->
+            <button onclick="filtrarPorCategoria('<%= categoria %>')" id="btn-filtro-<%= categoria %>"
+                    class="btn-filtro px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+              <%= categoria.titleize %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Lista de servicios -->
+    <div class="bg-white shadow overflow-hidden rounded-lg">
+      <% if @servicios.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Servicio
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Categoría
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Precio Base
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Duración
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Estado
+                </th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <!-- CAMBIO: Se añade un ID al tbody para seleccionarlo con JS -->
+            <tbody class="bg-white divide-y divide-gray-200" id="servicios-tbody">
+              <% @servicios.each do |servicio| %>
+                <!-- CAMBIO: Se añade la clase 'servicio-row' y el atributo 'data-categoria' a la fila -->
+                <tr class="hover:bg-gray-50 servicio-row" data-categoria="<%= servicio.categoria %>">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span class="text-white font-bold">🔧</span>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">
+                          <%= link_to servicio.nombre, servicio_path(servicio),
+                              class: "hover:text-blue-600" %>
+                        </div>
+                        <% if servicio.descripcion.present? %>
+                          <div class="text-sm text-gray-500 truncate max-w-xs">
+                            <%= servicio.descripcion %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% if servicio.categoria.present? %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        <%= servicio.categoria.titleize %>
+                      </span>
+                    <% else %>
+                      <span class="text-gray-400">Sin categoría</span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <span class="font-medium text-green-600">
+                      $<%= number_with_precision(servicio.precio_base, precision: 2) %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <% if servicio.duracion_estimada.present? %>
+                      <div class="flex items-center space-x-1">
+                        <span>⏱️</span>
+                        <span><%= servicio.duracion_estimada %> min</span>
+                      </div>
+                    <% else %>
+                      <span class="text-gray-400">No especificado</span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <% if servicio.activo? %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        ✅ Activo
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        ❌ Inactivo
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <div class="flex items-center justify-center space-x-2">
+                      <%= link_to "Ver", servicio_path(servicio),
+                          class: "text-blue-600 hover:text-blue-900" %>
+                      <%= link_to "Editar", edit_servicio_path(servicio),
+                          class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Eliminar", servicio_path(servicio), method: :delete,
+                          data: { confirm: "¿Estás seguro de que quieres eliminar #{servicio.nombre}?" },
+                          class: "text-red-600 hover:text-red-900" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <!-- CAMBIO: Se añade un mensaje para cuando no hay resultados, inicialmente oculto -->
+        <div id="no-results-message" class="text-center py-12" style="display: none;">
+          <div class="text-6xl mb-4">🤷</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No hay servicios en esta categoría</h3>
+          <p class="text-gray-600">Selecciona otra categoría o "Todos" para ver más resultados.</p>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">🔧</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No hay servicios registrados</h3>
+          <p class="text-gray-600 mb-6">Comienza agregando el primer servicio del taller</p>
+          <%= link_to "Crear Primer Servicio", new_servicio_path,
+              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <% if @servicios.any? %>
+      <div class="mt-6 grid grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-blue-600"><%= @servicios.count %></div>
+          <div class="text-sm text-gray-600">Total Servicios</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-green-600"><%= @servicios.activos.count %></div>
+          <div class="text-sm text-gray-600">Servicios Activos</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-indigo-600"><%= @categorias.count %></div>
+          <div class="text-sm text-gray-600">Categorías</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+          <div class="text-2xl font-bold text-purple-600">
+            $<%= number_with_precision(@servicios.activos.average(:precio_base) || 0, precision: 0) %>
+          </div>
+          <div class="text-sm text-gray-600">Precio Promedio</div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- CAMBIO: Se añade el script completo para el filtrado -->
+<script>
+function filtrarPorCategoria(categoriaSeleccionada) {
+  // Selecciona todos los elementos necesarios del DOM
+  const rows = document.querySelectorAll('.servicio-row');
+  const noResultsMessage = document.getElementById('no-results-message');
+  let visibleCount = 0;
+
+  // 1. Itera sobre cada fila de la tabla para mostrarla u ocultarla
+  rows.forEach(row => {
+    const rowCategoria = row.dataset.categoria; // Obtiene la categoría de la fila desde el atributo data-
+
+    // Comprueba si la fila debe ser visible
+    if (categoriaSeleccionada === 'todos' || rowCategoria === categoriaSeleccionada) {
+      row.style.display = ''; // Muestra la fila
+      visibleCount++;
+    } else {
+      row.style.display = 'none'; // Oculta la fila
+    }
+  });
+
+  // 2. Muestra u oculta el mensaje de "no hay resultados"
+  if (visibleCount === 0 && noResultsMessage) {
+    noResultsMessage.style.display = '';
+  } else if (noResultsMessage) {
+    noResultsMessage.style.display = 'none';
+  }
+
+  // 3. Actualiza el estilo de los botones para resaltar el activo
+  const buttons = document.querySelectorAll('.btn-filtro');
+  buttons.forEach(button => {
+    // Primero, resetea todos los botones a su estado inactivo
+    button.classList.remove('bg-blue-100', 'text-blue-800');
+    button.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+  });
+
+  // Luego, aplica el estilo activo solo al botón que fue presionado
+  const activeButton = document.getElementById(`btn-filtro-${categoriaSeleccionada}`);
+  if (activeButton) {
+    activeButton.classList.add('bg-blue-100', 'text-blue-800');
+    activeButton.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+  }
+}
+</script>

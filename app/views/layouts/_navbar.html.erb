@@ -57,6 +57,22 @@
           <span>Usuarios</span>
         <% end %>
         
+        <%= link_to servicios_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(servicios_path) || controller_name == 'servicios'}" do %>
+          🔧 Servicios
+        <% end %>
+        
+        <%= link_to detalles_servicio_vehiculos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(detalles_servicio_vehiculos_path) || controller_name == 'detalles_servicio_vehiculos'}" do %>
+          🔧🏍️ Servicios Aplicados
+        <% end %>
+        
+        <%= link_to facturas_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(facturas_path) || controller_name == 'facturas'}" do %>
+          🧾 Facturas
+        <% end %>
+        
+        <%= link_to pedidos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(pedidos_path) || controller_name == 'pedidos'}" do %>
+          📦 Pedidos
+        <% end %>
+        
       </div>
 
       <!-- Usuario y acciones - Desktop -->
@@ -182,6 +198,9 @@
             data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } do %>
           Salir
         <% end %>
+        <%= link_to 'Cerrar Sesión', session_path, method: :delete,
+            class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors",
+            data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } %>
       </div>
     </div>
   </div>

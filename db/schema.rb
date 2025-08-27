@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_26_051247) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_27_061347) do
   create_table "clientes", force: :cascade do |t|
     t.string "nombre"
     t.string "apellido"
@@ -30,13 +30,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_051247) do
     t.integer "cantidad"
     t.decimal "costo_item"
     t.text "descripcion"
-    t.integer "service_id"
+    t.integer "servicio_id"
     t.integer "producto_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "detalle_servicio_vehiculo_id"
+    t.index ["detalle_servicio_vehiculo_id"], name: "index_detalles_facturas_on_detalle_servicio_vehiculo_id"
     t.index ["factura_id"], name: "index_detalles_facturas_on_factura_id"
     t.index ["producto_id"], name: "index_detalles_facturas_on_producto_id"
-    t.index ["service_id"], name: "index_detalles_facturas_on_service_id"
+    t.index ["servicio_id"], name: "index_detalles_facturas_on_servicio_id"
   end
 
   create_table "detalles_pedidos", force: :cascade do |t|
@@ -51,25 +53,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_051247) do
   end
 
   create_table "detalles_servicio_productos", force: :cascade do |t|
-    t.integer "service_id"
+    t.integer "servicio_id"
     t.integer "producto_id", null: false
     t.integer "cantidad_usada"
     t.decimal "precio_unitario"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["producto_id"], name: "index_detalles_servicio_productos_on_producto_id"
-    t.index ["service_id"], name: "index_detalles_servicio_productos_on_service_id"
+    t.index ["servicio_id"], name: "index_detalles_servicio_productos_on_servicio_id"
   end
 
   create_table "detalles_servicio_vehiculos", force: :cascade do |t|
-    t.integer "service_id"
+    t.integer "servicio_id"
     t.integer "vehiculo_id", null: false
     t.text "descripcion"
     t.datetime "fecha_inicio"
     t.datetime "fecha_fin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["service_id"], name: "index_detalles_servicio_vehiculos_on_service_id"
+    t.index ["servicio_id"], name: "index_detalles_servicio_vehiculos_on_servicio_id"
     t.index ["vehiculo_id"], name: "index_detalles_servicio_vehiculos_on_vehiculo_id"
   end
 
@@ -181,14 +183,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_26_051247) do
     t.index ["matricula"], name: "index_vehiculos_on_matricula", unique: true
   end
 
+  add_foreign_key "detalles_facturas", "detalles_servicio_vehiculos", column: "detalle_servicio_vehiculo_id"
   add_foreign_key "detalles_facturas", "facturas"
   add_foreign_key "detalles_facturas", "productos"
-  add_foreign_key "detalles_facturas", "servicios", column: "service_id"
+  add_foreign_key "detalles_facturas", "servicios"
   add_foreign_key "detalles_pedidos", "pedidos"
   add_foreign_key "detalles_pedidos", "productos"
   add_foreign_key "detalles_servicio_productos", "productos"
-  add_foreign_key "detalles_servicio_productos", "servicios", column: "service_id"
-  add_foreign_key "detalles_servicio_vehiculos", "servicios", column: "service_id"
+  add_foreign_key "detalles_servicio_productos", "servicios"
+  add_foreign_key "detalles_servicio_vehiculos", "servicios"
   add_foreign_key "detalles_servicio_vehiculos", "vehiculos"
   add_foreign_key "facturas", "clientes"
   add_foreign_key "facturas", "users"

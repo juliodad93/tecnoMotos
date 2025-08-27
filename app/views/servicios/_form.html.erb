@@ -1,0 +1,171 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-2xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to servicios_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Servicios
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500">Formulario</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-900">
+          🔧 <%= @servicio.persisted? ? "Editar Servicio" : "Nuevo Servicio" %>
+        </h1>
+      </div>
+
+      <!-- Form -->
+      <div class="px-6 py-6">
+        <%= form_with model: @servicio, local: true, class: "space-y-6" do |form| %>
+          <!-- Mostrar errores -->
+          <% if @servicio.errors.any? %>
+            <div class="bg-red-50 border border-red-200 rounded-md p-4">
+              <div class="flex">
+                <div class="text-red-400">⚠️</div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    Se encontraron <%= pluralize(@servicio.errors.count, "error") %>:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-1">
+                      <% @servicio.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Nombre del servicio -->
+          <div>
+            <%= form.label :nombre, "Nombre del Servicio", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_field :nombre, 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                placeholder: "Ej: Cambio de aceite, Afinación completa..." %>
+          </div>
+
+          <!-- Descripción -->
+          <div>
+            <%= form.label :descripcion, "Descripción", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_area :descripcion, rows: 4,
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                placeholder: "Describe en detalle qué incluye este servicio..." %>
+          </div>
+
+          <!-- Grid para precio y duración -->
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Precio base -->
+            <div>
+              <%= form.label :precio_base, "Precio Base", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">$</span>
+                </div>
+                <%= form.number_field :precio_base, step: 0.01, min: 0,
+                    class: "block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                    placeholder: "0.00" %>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Precio base del servicio en pesos</p>
+            </div>
+
+            <!-- Duración estimada -->
+            <div>
+              <%= form.label :duracion_estimada, "Duración Estimada", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <div class="relative">
+                <%= form.number_field :duracion_estimada, min: 0,
+                    class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                    placeholder: "60" %>
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 sm:text-sm">min</span>
+                </div>
+              </div>
+              <p class="mt-1 text-xs text-gray-500">Tiempo estimado en minutos</p>
+            </div>
+          </div>
+
+          <!-- Categoría -->
+          <div>
+            <%= form.label :categoria, "Categoría", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.select :categoria, 
+                options_for_select([
+                  ['Mantenimiento Preventivo', 'mantenimiento_preventivo'],
+                  ['Mantenimiento Correctivo', 'mantenimiento_correctivo'],
+                  ['Electricidad', 'electricidad'],
+                  ['Motor', 'motor'],
+                  ['Transmisión', 'transmision'],
+                  ['Frenos', 'frenos'],
+                  ['Suspensión', 'suspension'],
+                  ['Carrocería', 'carroceria'],
+                  ['Neumáticos', 'neumaticos'],
+                  ['Diagnóstico', 'diagnostico'],
+                  ['Otros', 'otros']
+                ], @servicio.categoria),
+                { prompt: "Selecciona una categoría" },
+                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" } %>
+          </div>
+
+          <!-- Estado activo -->
+          <div>
+            <div class="flex items-center">
+              <%= form.check_box :activo, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+              <%= form.label :activo, "Servicio activo", class: "ml-2 block text-sm text-gray-900" %>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">Los servicios inactivos no aparecerán en las opciones de facturación</p>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <%= link_to "Cancelar", @servicio.persisted? ? servicio_path(@servicio) : servicios_path, 
+                class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= form.submit @servicio.persisted? ? "Actualizar Servicio" : "Crear Servicio", 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Calcular duración automáticamente basada en la categoría (opcional)
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('servicio_categoria');
+    const duracionInput = document.getElementById('servicio_duracion_estimada');
+    
+    if (categoriaSelect && duracionInput && !duracionInput.value) {
+      categoriaSelect.addEventListener('change', function() {
+        const duracionesSugeridas = {
+          'mantenimiento_preventivo': 120,
+          'mantenimiento_correctivo': 180,
+          'electricidad': 90,
+          'motor': 240,
+          'transmision': 180,
+          'frenos': 60,
+          'suspension': 120,
+          'carroceria': 300,
+          'neumaticos': 30,
+          'diagnostico': 45,
+          'otros': 60
+        };
+        
+        const duracionSugerida = duracionesSugeridas[this.value];
+        if (duracionSugerida && !duracionInput.value) {
+          duracionInput.value = duracionSugerida;
+        }
+      });
+    }
+  });
+</script>

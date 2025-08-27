@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "clientes#index"
+  root "home#index"
   
   resources :clientes do
     resources :vehiculos, except: [:index]
@@ -23,4 +23,30 @@ Rails.application.routes.draw do
   resources :users
   resources :proveedores
   resources :productos
+  resources :servicios
+  resources :facturas do
+    member do
+      patch :marcar_como_pagada
+      patch :anular
+    end
+    collection do
+      get :desde_servicios
+      post :crear_desde_servicio
+    end
+    resources :detalles_facturas, path: 'detalles'
+  end
+  resources :pedidos
+  
+  resources :detalles_servicio_vehiculos do
+    member do
+      patch :cerrar_servicio
+      get :cerrar_servicio  # Agregar ruta GET como fallback
+    end
+    
+    resources :detalles_servicio_productos, except: [:show] do
+      collection do
+        post :finalizar_servicio
+      end
+    end
+  end
 end

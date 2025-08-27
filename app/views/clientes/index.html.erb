@@ -1,103 +1,631 @@
-<div class="min-h-screen bg-gray-100 py-8">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="bg-white shadow rounded-lg">
-      <!-- Header -->
-      <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-900">Clientes</h1>
-          <%= link_to "Nuevo Cliente", new_cliente_path, 
-              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+<!-- Fuentes de Google -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<!-- CSS adicional para mejorar la vista -->
+<style>
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  .clients-wrapper {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+  }
+
+  .content-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin: 0 auto;
+    max-width: 1200px;
+  }
+
+  .header-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    color: white;
+  }
+
+  .header-section h1 {
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-section p {
+    font-weight: 400;
+    opacity: 0.9;
+    font-size: 1.1rem;
+  }
+
+  .btn-nuevo-cliente {
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn-nuevo-cliente:hover {
+    background: rgba(255,255,255,0.3);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    text-decoration: none;
+  }
+
+  .stats-section {
+    padding: 2rem;
+    background: #f8f9fa;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .stat-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  .stat-icon.success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+  .stat-icon.info { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+  .stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2d3748;
+    margin: 0;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-section {
+    padding: 1.5rem 2rem;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .search-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border-left: 2px solid #e2e8f0;
+  }
+
+  .search-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+  }
+
+  .search-icon {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    padding: 12px 16px;
+  }
+
+  .filter-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-right: 1rem;
+  }
+
+  .btn-filters {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: white;
+    color: #4a5568;
+    font-weight: 500;
+  }
+
+  .custom-table {
+    margin: 0;
+  }
+
+  .custom-table thead th {
+    background: #f7fafc;
+    border: none;
+    color: #4a5568;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 1rem 1.5rem;
+  }
+
+  .custom-table tbody td {
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 1.2rem 1.5rem;
+    vertical-align: middle;
+  }
+
+  .custom-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+
+  .client-name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .client-email {
+    color: #718096;
+    font-size: 0.85rem;
+  }
+
+  .badge-id {
+    background: #edf2f7;
+    color: #4a5568;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: inline-block;
+  }
+
+  .contact-info {
+    font-size: 0.9rem;
+  }
+
+  .contact-phone {
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+  }
+
+  .contact-address {
+    color: #718096;
+    font-size: 0.8rem;
+  }
+
+  .badge-vehicles {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: inline-block;
+  }
+
+  .badge-vehicles.no-vehicles {
+    background: #e2e8f0;
+    color: #718096;
+  }
+
+  .badge-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    display: inline-block;
+  }
+
+  .badge-status.active {
+    background: #c6f6d5;
+    color: #22543d;
+  }
+
+  .badge-status.inactive {
+    background: #fed7d7;
+    color: #742a2a;
+  }
+
+  .action-buttons .btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    border: 2px solid;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .btn-view {
+    color: #3182ce;
+    border-color: #bee3f8;
+    background: #ebf8ff;
+  }
+
+  .btn-view:hover {
+    background: #3182ce;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .btn-edit {
+    color: #d69e2e;
+    border-color: #faf089;
+    background: #fffff0;
+  }
+
+  .btn-edit:hover {
+    background: #d69e2e;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .btn-delete {
+    color: #e53e3e;
+    border-color: #fbb6ce;
+    background: #fff5f5;
+  }
+
+  .btn-delete:hover {
+    background: #e53e3e;
+    color: white;
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .empty-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    color: white;
+    font-size: 2.5rem;
+  }
+
+  .empty-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-description {
+    color: #718096;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  .btn-add-first {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn-add-first:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+  }
+
+  .d-flex { display: flex; }
+  .align-items-center { align-items: center; }
+  .justify-content-between { justify-content: space-between; }
+  .justify-content-center { justify-content: center; }
+  .text-right { text-align: right; }
+  .mb-0 { margin-bottom: 0; }
+  .mb-1 { margin-bottom: 0.25rem; }
+  .mb-2 { margin-bottom: 0.5rem; }
+  .mb-3 { margin-bottom: 1rem; }
+  .mb-4 { margin-bottom: 1.5rem; }
+  .mr-1 { margin-right: 0.25rem; }
+  .mr-2 { margin-right: 0.5rem; }
+  .mr-3 { margin-right: 1rem; }
+  .py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+</style>
+
+<!-- Vista de Clientes Mejorada -->
+<div class="clients-wrapper">
+  <div class="content-card">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-2">Gestión de Clientes</h1>
+          <p class="mb-0">Administra y visualiza información detallada de todos tus clientes</p>
+        </div>
+        <div>
+          <%= link_to new_cliente_path, class: "btn-nuevo-cliente" do %>
+            <i class="fas fa-plus mr-2"></i>
+            Nuevo Cliente
+          <% end %>
         </div>
       </div>
+    </div>
 
-      <!-- Search Bar -->
-      <div class="px-6 py-4 bg-gray-50">
-        <div class="max-w-md">
-          <input type="search" placeholder="Buscar cliente..." 
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <div style="display: flex; flex-wrap: wrap; margin: -0.5rem;">
+        <div style="flex: 1; min-width: 300px; padding: 0.5rem;">
+          <div class="stat-card">
+            <div class="d-flex align-items-center">
+              <div class="stat-icon primary mr-3">
+                <i class="fas fa-users"></i>
+              </div>
+              <div>
+                <p class="stat-label">Total Clientes</p>
+                <h3 class="stat-number"><%= @clientes.count %></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex: 1; min-width: 300px; padding: 0.5rem;">
+          <div class="stat-card">
+            <div class="d-flex align-items-center">
+              <div class="stat-icon success mr-3">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div>
+                <p class="stat-label">Clientes Activos</p>
+                <h3 class="stat-number"><%= @clientes.where(activo: true).count rescue @clientes.count %></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex: 1; min-width: 300px; padding: 0.5rem;">
+          <div class="stat-card">
+            <div class="d-flex align-items-center">
+              <div class="stat-icon info mr-3">
+                <i class="fas fa-car"></i>
+              </div>
+              <div>
+                <p class="stat-label">Total Vehículos</p>
+                <h3 class="stat-number"><%= @clientes.joins(:vehiculos).count rescue 0 %></h3>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Clients Table -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;">
+        <div style="flex: 1; min-width: 300px;">
+          <div style="display: flex;">
+            <span class="search-icon">
+              <i class="fas fa-search"></i>
+            </span>
+            <input type="search" 
+                   placeholder="Buscar por nombre, email o identificación..." 
+                   class="search-input" style="flex: 1;">
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <select class="filter-select">
+            <option>Todos los estados</option>
+            <option>Activos</option>
+            <option>Inactivos</option>
+          </select>
+          <button class="btn-filters">
+            <i class="fas fa-filter mr-1"></i>
+            Filtros
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <% if @clientes.any? %>
+      <div style="overflow-x: auto;">
+        <table class="custom-table" style="width: 100%;">
+          <thead>
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Identificación</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehículos</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th>Cliente</th>
+              <th>Identificación</th>
+              <th>Información de Contacto</th>
+              <th>Vehículos</th>
+              <th>Estado</th>
+              <th class="text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @clientes.each do |cliente| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10">
-                      <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
-                        <span class="text-white font-medium text-sm">
-                          <%= cliente.nombre.first %><%= cliente.apellido.first %>
-                        </span>
-                      </div>
+          <tbody>
+            <% @clientes.each_with_index do |cliente, index| %>
+              <tr>
+                <!-- Cliente Info -->
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-circle">
+                      <%= cliente.nombre.first.upcase %><%= cliente.apellido.first.upcase %>
                     </div>
-                    <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">
+                    <div>
+                      <div class="client-name">
                         <%= cliente.nombre %> <%= cliente.apellido %>
                       </div>
-                      <div class="text-sm text-gray-500">
-                        <%= cliente.correo if cliente.correo.present? %>
-                      </div>
+                      <% if cliente.correo.present? %>
+                        <div class="client-email">
+                          <i class="fas fa-envelope mr-1"></i>
+                          <%= cliente.correo %>
+                        </div>
+                      <% end %>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <%= cliente.identificacion %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div>
-                    <%= cliente.telefono if cliente.telefono.present? %>
-                  </div>
-                  <div class="text-xs text-gray-400">
-                    <%= cliente.direccion if cliente.direccion.present? %>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    <%= cliente.vehiculos.count %> vehículo<%= "s" if cliente.vehiculos.count != 1 %>
+
+                <!-- Identificación -->
+                <td>
+                  <span class="badge-id">
+                    <%= cliente.identificacion %>
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex items-center justify-end space-x-2">
-                    <%= link_to "Ver", cliente_path(cliente), 
-                        class: "text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition duration-200" %>
-                    <%= link_to "Editar", edit_cliente_path(cliente), 
-                        class: "text-yellow-600 hover:text-yellow-900 bg-yellow-50 hover:bg-yellow-100 px-3 py-1 rounded-md transition duration-200" %>
-                    <%= link_to "Eliminar", cliente_path(cliente), 
+
+                <!-- Contacto -->
+                <td>
+                  <div class="contact-info">
+                    <% if cliente.telefono.present? %>
+                      <div class="contact-phone">
+                        <i class="fas fa-phone mr-1"></i>
+                        <%= cliente.telefono %>
+                      </div>
+                    <% end %>
+                    <% if cliente.direccion.present? %>
+                      <div class="contact-address">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        <%= truncate(cliente.direccion, length: 30) %>
+                      </div>
+                    <% end %>
+                  </div>
+                </td>
+
+                <!-- Vehículos -->
+                <td>
+                  <% vehiculos_count = cliente.vehiculos.count %>
+                  <span class="badge-vehicles <%= 'no-vehicles' if vehiculos_count == 0 %>">
+                    <i class="fas fa-car mr-1"></i>
+                    <%= vehiculos_count %> vehículo<%= "s" if vehiculos_count != 1 %>
+                  </span>
+                </td>
+
+                <!-- Estado -->
+                <td>
+                  <% activo = cliente.respond_to?(:activo) ? cliente.activo : true %>
+                  <span class="badge-status <%= activo ? 'active' : 'inactive' %>">
+                    <i class="fas fa-circle mr-1" style="font-size: 6px;"></i>
+                    <%= activo ? 'Activo' : 'Inactivo' %>
+                  </span>
+                </td>
+
+                <!-- Acciones -->
+                <td class="text-right">
+                  <div class="action-buttons">
+                    <%= link_to cliente_path(cliente), 
+                        class: "btn-view",
+                        title: "Ver cliente" do %>
+                      <i class="fas fa-eye"></i>
+                    <% end %>
+                    
+                    <%= link_to edit_cliente_path(cliente), 
+                        class: "btn-edit",
+                        title: "Editar cliente" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                    
+                    <%= link_to cliente_path(cliente), 
                         method: :delete,
                         data: { 
-                          confirm: "¿Estás seguro de que quieres eliminar este cliente?" 
+                          confirm: "¿Estás seguro de que quieres eliminar este cliente? Esta acción no se puede deshacer." 
                         },
-                        class: "text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition duration-200" %>
+                        class: "btn-delete",
+                        title: "Eliminar cliente" do %>
+                      <i class="fas fa-trash"></i>
+                    <% end %>
                   </div>
                 </td>
               </tr>
             <% end %>
           </tbody>
         </table>
-        
-        <% if @clientes.empty? %>
-          <div class="text-center py-12">
-            <div class="text-gray-500">
-              <h3 class="text-lg font-medium mb-2">No hay clientes registrados</h3>
-              <p class="mb-4">Comienza agregando tu primer cliente</p>
-              <%= link_to "Agregar Cliente", new_cliente_path, 
-                  class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
-            </div>
-          </div>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h4 class="empty-title">No hay clientes registrados</h4>
+        <p class="empty-description">
+          Comienza agregando tu primer cliente para gestionar su información y vehículos
+        </p>
+        <%= link_to new_cliente_path, class: "btn-add-first" do %>
+          <i class="fas fa-plus mr-2"></i>
+          Agregar Primer Cliente
         <% end %>
       </div>
-    </div>
+    <% end %>
+
+    <!-- Pagination (if using pagination gem) -->
+    <% if defined?(will_paginate) && @clientes.respond_to?(:total_pages) %>
+      <div class="py-4" style="background: white; border-top: 1px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">
+          <div style="color: #718096; font-size: 0.9rem;">
+            Mostrando <span style="font-weight: 600; color: #2d3748;">1</span> a <span style="font-weight: 600; color: #2d3748;">10</span> 
+            de <span style="font-weight: 600; color: #2d3748;"><%= @clientes.count %></span> resultados
+          </div>
+          <div>
+            <%= will_paginate @clientes, 
+                previous_label: "← Anterior", 
+                next_label: "Siguiente →" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

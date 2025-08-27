@@ -1,56 +1,206 @@
-<nav class="bg-white shadow-sm border-b border-gray-200">
-  <div class="max-w-7xl mx-auto px-4">
+<nav class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
+      
       <!-- Logo y marca -->
       <div class="flex items-center">
-        <%= link_to root_path, class: "flex items-center space-x-3" do %>
-          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span class="text-white font-bold text-lg">🏍️</span>
+        <%= link_to root_path, class: "flex items-center space-x-3 hover:opacity-90 transition-opacity" do %>
+          <div class="relative">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
+              <span class="text-white font-bold text-lg">🏍️</span>
+            </div>
+            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
-          <span class="text-xl font-bold text-gray-900">TecnoMotos</span>
+          <div>
+            <h1 class="text-2xl font-bold text-blue-600">TecnoMotos</h1>
+            <p class="text-xs text-gray-500 -mt-1">Sistema de Gestión</p>
+          </div>
         <% end %>
       </div>
 
-      <!-- Navegación principal -->
-      <div class="flex items-center space-x-8">
-        <%= link_to clientes_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(clientes_path) || controller_name == 'clientes'}" do %>
-          👥 Clientes
+      <!-- Navegación principal - Desktop -->
+      <div class="hidden md:flex items-center space-x-2">
+        
+        <%= link_to clientes_path, class: nav_link_classes('clientes') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span>Clientes</span>
         <% end %>
         
-        <%= link_to vehiculos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(vehiculos_path) || controller_name == 'vehiculos'}" do %>
-          🏍️ Vehículos
+        <%= link_to vehiculos_path, class: nav_link_classes('vehiculos') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12a3 3 0 006 0 3 3 0 00-6 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0-1.5-3-9-9-9s-9 7.5-9 9 3 9 9 9 9-7.5 9-9z"></path>
+          </svg>
+          <span>Vehículos</span>
         <% end %>
         
-        <%= link_to proveedores_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(proveedores_path) || controller_name == 'proveedores'}" do %>
-          🏢 Proveedores
+        <%= link_to proveedores_path, class: nav_link_classes('proveedores') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          <span>Proveedores</span>
         <% end %>
         
-        <%= link_to productos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(productos_path) || controller_name == 'productos'}" do %>
-          📦 Productos
+        <%= link_to productos_path, class: nav_link_classes('productos') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <span>Productos</span>
         <% end %>
         
-        <%= link_to users_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(users_path) || controller_name == 'users'}" do %>
-          👤 Usuarios
+        <%= link_to users_path, class: nav_link_classes('users') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          <span>Usuarios</span>
+        <% end %>
+        
+      </div>
+
+      <!-- Usuario y acciones - Desktop -->
+      <div class="hidden md:flex items-center space-x-4">
+        
+        <!-- Notificaciones -->
+        <button class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5-5 5h5zm0 0v-7a3 3 0 00-3-3H9a3 3 0 00-3 3v7"></path>
+          </svg>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+
+        <!-- Info del usuario -->
+        <div class="flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
+          <div class="relative">
+            <div class="w-8 h-8 bg-gray-600 rounded-lg flex items-center justify-center">
+              <span class="text-white font-medium text-sm">
+                <%= current_user.nombre[0].upcase %><%= current_user.apellido[0].upcase %>
+              </span>
+            </div>
+            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+          </div>
+          <div class="text-left">
+            <p class="text-sm font-medium text-gray-900">
+              <%= current_user.nombre %> <%= current_user.apellido %>
+            </p>
+            <p class="text-xs text-gray-500">
+              <%= current_user.cargo_humanizado %>
+            </p>
+          </div>
+        </div>
+
+        <!-- Botón de cerrar sesión -->
+        <%= link_to session_path(Current.session), method: :delete,
+            class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm",
+            data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span>Salir</span>
         <% end %>
       </div>
 
-      <!-- Usuario actual y logout -->
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
-          <span class="<%= cargo_color(current_user.cargo) %> px-2 py-1 rounded-full text-xs font-medium">
-            <%= cargo_icon(current_user.cargo) %> <%= current_user.cargo_humanizado %>
-          </span>
-          <span class="text-sm text-gray-700">
-            <%= current_user.nombre %> <%= current_user.apellido %>
-          </span>
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button onclick="toggleMobileMenu()" class="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none">
+          <svg id="mobile-menu-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg id="mobile-menu-close" class="hidden w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden hidden bg-gray-50 border-t border-gray-200">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      
+      <%= link_to clientes_path, class: mobile_nav_link_classes('clientes') do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+        </svg>
+        <span>Clientes</span>
+      <% end %>
+      
+      <%= link_to vehiculos_path, class: mobile_nav_link_classes('vehiculos') do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12a3 3 0 006 0 3 3 0 00-6 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0-1.5-3-9-9-9s-9 7.5-9 9 3 9 9 9 9-7.5 9-9z"></path>
+        </svg>
+        <span>Vehículos</span>
+      <% end %>
+      
+      <%= link_to proveedores_path, class: mobile_nav_link_classes('proveedores') do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <span>Proveedores</span>
+      <% end %>
+      
+      <%= link_to productos_path, class: mobile_nav_link_classes('productos') do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+        </svg>
+        <span>Productos</span>
+      <% end %>
+      
+      <%= link_to users_path, class: mobile_nav_link_classes('users') do %>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span>Usuarios</span>
+      <% end %>
+      
+    </div>
+    
+    <!-- Mobile user section -->
+    <div class="border-t border-gray-200 pt-4 pb-3">
+      <div class="px-4 flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-medium">
+              <%= current_user.nombre[0].upcase %><%= current_user.apellido[0].upcase %>
+            </span>
+          </div>
+          <div class="ml-3">
+            <div class="text-base font-medium text-gray-800">
+              <%= current_user.nombre %> <%= current_user.apellido %>
+            </div>
+            <div class="text-sm text-gray-500">
+              <%= current_user.cargo_humanizado %>
+            </div>
+          </div>
         </div>
         
-        <%= link_to session_path(Current.session), method: :delete, 
-            class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors",
+        <%= link_to session_path(Current.session), method: :delete,
+            class: "bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors",
             data: { confirm: "¿Estás seguro de que quieres cerrar sesión?" } do %>
-          Cerrar Sesión
+          Salir
         <% end %>
       </div>
     </div>
   </div>
 </nav>
+
+<script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const openIcon = document.getElementById('mobile-menu-open');
+    const closeIcon = document.getElementById('mobile-menu-close');
+    
+    if (menu.classList.contains('hidden')) {
+      menu.classList.remove('hidden');
+      openIcon.classList.add('hidden');
+      closeIcon.classList.remove('hidden');
+    } else {
+      menu.classList.add('hidden');
+      openIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    }
+  }
+</script>

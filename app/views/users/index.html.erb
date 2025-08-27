@@ -28,7 +28,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10">
-                      <div class="h-10 w-10 rounded-full bg-<%= cargo_color(user.cargo) %>-600 flex items-center justify-center">
+                      <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
                         <span class="text-white font-medium text-sm">
                           <%= user.nombre.first %><%= user.apellido.first %>
                         </span>
@@ -45,7 +45,7 @@
                   <%= user.email_address %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-<%= cargo_color(user.cargo) %>-100 text-<%= cargo_color(user.cargo) %>-800">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= cargo_color(user.cargo) %>">
                     <%= cargo_icon(user.cargo) %> <%= user.cargo_humanizado %>
                   </span>
                 </td>

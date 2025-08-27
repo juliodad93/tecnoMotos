@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to productos_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Productos
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @producto.nombre %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-full bg-indigo-600 flex items-center justify-center">
+              <span class="text-white font-bold text-2xl">📦</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                <%= @producto.nombre %>
+              </h1>
+              <p class="text-sm text-gray-600 flex items-center space-x-4">
+                <span>SKU: <%= @producto.sku %></span>
+                <span>•</span>
+                <% if @producto.cantidad_disponible > 10 %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    En stock (<%= @producto.cantidad_disponible %>)
+                  </span>
+                <% elsif @producto.cantidad_disponible > 0 %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Stock bajo (<%= @producto.cantidad_disponible %>)
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    Agotado
+                  </span>
+                <% end %>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3">
+            <%= link_to "Editar", edit_producto_path(@producto), 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= link_to "Eliminar", producto_path(@producto), method: :delete,
+                data: { confirm: "¿Estás seguro de que quieres eliminar #{@producto.nombre}?" },
+                class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Información del Producto -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Producto</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @producto.nombre %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">SKU</dt>
+                <dd class="mt-1 text-sm text-gray-900 font-mono"><%= @producto.sku %></dd>
+              </div>
+              <% if @producto.descripcion.present? %>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Descripción</dt>
+                  <dd class="mt-1 text-sm text-gray-900"><%= @producto.descripcion %></dd>
+                </div>
+              <% end %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Proveedor</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= link_to proveedore_path(@producto.proveedor), class: "text-blue-600 hover:text-blue-800" do %>
+                    🏢 <%= @producto.proveedor.nombre %>
+                  <% end %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Precios e Inventario -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Precios e Inventario</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Precio de Costo</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-lg font-medium">$<%= number_with_precision(@producto.precio_unitario, precision: 2) %></span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Precio de Venta</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-lg font-medium text-green-600">$<%= number_with_precision(@producto.precio_venta, precision: 2) %></span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Margen de Ganancia</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <% margen = @producto.precio_venta - @producto.precio_unitario %>
+                  <% margen_porcentaje = (@producto.precio_unitario > 0) ? ((margen / @producto.precio_unitario) * 100) : 0 %>
+                  <div class="flex items-center space-x-4">
+                    <span class="<%= margen >= 0 ? 'text-green-600' : 'text-red-600' %> font-medium">
+                      $<%= number_with_precision(margen, precision: 2) %>
+                    </span>
+                    <span class="<%= margen_porcentaje >= 0 ? 'text-green-600' : 'text-red-600' %> text-sm">
+                      (<%= number_with_precision(margen_porcentaje, precision: 1) %>%)
+                    </span>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Cantidad en Stock</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-lg font-medium"><%= @producto.cantidad_disponible %></span> unidades
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Valor Total del Inventario</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <span class="text-lg font-medium text-blue-600">
+                    $<%= number_with_precision(@producto.precio_unitario * @producto.cantidad_disponible, precision: 2) %>
+                  </span>
+                  <span class="text-sm text-gray-500">(al costo)</span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Información Adicional -->
+        <div class="mt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Sistema</h3>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt class="font-medium text-gray-500">Fecha de Registro</dt>
+                <dd class="text-gray-900"><%= @producto.created_at.strftime("%d de %B de %Y") %></dd>
+              </div>
+              <div>
+                <dt class="font-medium text-gray-500">Última Actualización</dt>
+                <dd class="text-gray-900"><%= @producto.updated_at.strftime("%d de %B de %Y") %></dd>
+              </div>
+              <% if @producto.fecha_registro.present? %>
+                <div>
+                  <dt class="font-medium text-gray-500">Fecha de Registro Original</dt>
+                  <dd class="text-gray-900"><%= @producto.fecha_registro.strftime("%d de %B de %Y") %></dd>
+                </div>
+              <% end %>
+              <% if @producto.ultima_actualizacion.present? %>
+                <div>
+                  <dt class="font-medium text-gray-500">Última Actualización de Inventario</dt>
+                  <dd class="text-gray-900"><%= @producto.ultima_actualizacion.strftime("%d de %B de %Y") %></dd>
+                </div>
+              <% end %>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -4,14 +4,22 @@
     <nav class="flex mb-4" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1">
         <li class="inline-flex items-center">
-          <%= link_to users_path, class: "text-gray-700 hover:text-blue-600" do %>
-            Usuarios
+          <%= link_to productos_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Productos
           <% end %>
         </li>
         <li>
           <div class="flex items-center">
             <span class="mx-2 text-gray-400">/</span>
-            <span class="text-gray-500">Nuevo Usuario</span>
+            <%= link_to producto_path(@producto), class: "text-gray-700 hover:text-blue-600" do %>
+              <%= @producto.nombre %>
+            <% end %>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500">Editar</span>
           </div>
         </li>
       </ol>
@@ -20,15 +28,17 @@
     <div class="bg-white shadow rounded-lg">
       <!-- Header -->
       <div class="px-6 py-4 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-900">Nuevo Usuario</h1>
+        <h1 class="text-2xl font-bold text-gray-900">
+          Editar Producto: <%= @producto.nombre %>
+        </h1>
         <p class="mt-1 text-sm text-gray-600">
-          Completa la información para registrar un nuevo usuario en el sistema.
+          Actualiza la información del producto.
         </p>
       </div>
 
       <!-- Form -->
       <div class="px-6 py-6">
-        <%= render 'form', user: @user %>
+        <%= render 'form', producto: @producto %>
       </div>
     </div>
   </div>

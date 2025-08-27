@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Proveedores</h1>
+            <p class="mt-1 text-sm text-gray-600">
+              Gestiona la información de todos los proveedores del taller.
+            </p>
+          </div>
+          <%= link_to "Nuevo Proveedor", new_proveedore_path, 
+              class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+        </div>
+      </div>
+
+      <!-- Proveedores Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proveedor</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Información</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productos</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @proveedores.any? %>
+              <% @proveedores.each do |proveedor| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <div class="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center">
+                          <span class="text-white font-medium text-sm">
+                            🏢
+                          </span>
+                        </div>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">
+                          <%= proveedor.nombre %>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                          ID: <%= proveedor.identificacion %>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      <div class="flex items-center">
+                        <span class="mr-2">📞</span>
+                        <%= proveedor.telefono %>
+                      </div>
+                      <div class="flex items-center mt-1">
+                        <span class="mr-2">✉️</span>
+                        <%= proveedor.correo %>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      <% if proveedor.persona_contacto.present? %>
+                        <div class="flex items-center">
+                          <span class="mr-2">👤</span>
+                          <%= proveedor.persona_contacto %>
+                        </div>
+                      <% end %>
+                      <% if proveedor.direccion.present? %>
+                        <div class="flex items-center mt-1">
+                          <span class="mr-2">📍</span>
+                          <%= proveedor.direccion %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <%= proveedor.productos.count %> producto<%= 's' if proveedor.productos.count != 1 %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-2">
+                      <%= link_to "Ver", proveedore_path(proveedor), 
+                          class: "text-blue-600 hover:text-blue-900" %>
+                      <%= link_to "Editar", edit_proveedore_path(proveedor), 
+                          class: "text-indigo-600 hover:text-indigo-900" %>
+                      <%= link_to "Eliminar", proveedore_path(proveedor), 
+                          method: :delete,
+                          data: { confirm: "¿Estás seguro de que quieres eliminar a #{proveedor.nombre}?" },
+                          class: "text-red-600 hover:text-red-900" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center">
+                  <div class="text-gray-500">
+                    <div class="text-4xl mb-4">🏢</div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No hay proveedores registrados</h3>
+                    <p class="text-sm text-gray-500 mb-4">
+                      Comienza agregando tu primer proveedor al sistema.
+                    </p>
+                    <%= link_to "Agregar Proveedor", new_proveedore_path, 
+                        class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

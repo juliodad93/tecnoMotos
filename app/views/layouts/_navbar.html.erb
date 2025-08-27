@@ -21,6 +21,14 @@
           🏍️ Vehículos
         <% end %>
         
+        <%= link_to proveedores_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(proveedores_path) || controller_name == 'proveedores'}" do %>
+          🏢 Proveedores
+        <% end %>
+        
+        <%= link_to productos_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(productos_path) || controller_name == 'productos'}" do %>
+          📦 Productos
+        <% end %>
+        
         <%= link_to users_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(users_path) || controller_name == 'users'}" do %>
           👤 Usuarios
         <% end %>

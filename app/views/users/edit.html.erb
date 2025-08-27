@@ -11,7 +11,15 @@
         <li>
           <div class="flex items-center">
             <span class="mx-2 text-gray-400">/</span>
-            <span class="text-gray-500">Nuevo Usuario</span>
+            <%= link_to user_path(@user), class: "text-gray-700 hover:text-blue-600" do %>
+              <%= @user.nombre_completo %>
+            <% end %>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500">Editar</span>
           </div>
         </li>
       </ol>
@@ -20,9 +28,11 @@
     <div class="bg-white shadow rounded-lg">
       <!-- Header -->
       <div class="px-6 py-4 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-900">Nuevo Usuario</h1>
+        <h1 class="text-2xl font-bold text-gray-900">
+          Editar Usuario: <%= @user.nombre_completo %>
+        </h1>
         <p class="mt-1 text-sm text-gray-600">
-          Completa la información para registrar un nuevo usuario en el sistema.
+          Actualiza la información del usuario del sistema.
         </p>
       </div>
 

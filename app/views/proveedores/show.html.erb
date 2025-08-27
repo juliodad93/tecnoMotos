@@ -1,0 +1,180 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to proveedores_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Proveedores
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @proveedor.nombre %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-full bg-green-600 flex items-center justify-center">
+              <span class="text-white font-bold text-2xl">🏢</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                <%= @proveedor.nombre %>
+              </h1>
+              <p class="text-sm text-gray-600">
+                RUC/ID: <%= @proveedor.identificacion %>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3">
+            <%= link_to "Editar", edit_proveedore_path(@proveedor), 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= link_to "Eliminar", proveedore_path(@proveedor), method: :delete,
+                data: { confirm: "¿Estás seguro de que quieres eliminar a #{@proveedor.nombre}?" },
+                class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Información del Proveedor -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Proveedor</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre de la Empresa</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @proveedor.nombre %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">RUC/Identificación</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @proveedor.identificacion %></dd>
+              </div>
+              <% if @proveedor.persona_contacto.present? %>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Persona de Contacto</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <div class="flex items-center">
+                      <span class="mr-2">👤</span>
+                      <%= @proveedor.persona_contacto %>
+                    </div>
+                  </dd>
+                </div>
+              <% end %>
+              <% if @proveedor.direccion.present? %>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Dirección</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <div class="flex items-start">
+                      <span class="mr-2 mt-0.5">📍</span>
+                      <%= @proveedor.direccion %>
+                    </div>
+                  </dd>
+                </div>
+              <% end %>
+            </dl>
+          </div>
+
+          <!-- Información de Contacto -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información de Contacto</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <div class="flex items-center">
+                    <span class="mr-2">📞</span>
+                    <a href="tel:<%= @proveedor.telefono %>" class="text-blue-600 hover:text-blue-800">
+                      <%= @proveedor.telefono %>
+                    </a>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <div class="flex items-center">
+                    <span class="mr-2">✉️</span>
+                    <a href="mailto:<%= @proveedor.correo %>" class="text-blue-600 hover:text-blue-800">
+                      <%= @proveedor.correo %>
+                    </a>
+                  </div>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Fecha de Registro</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @proveedor.created_at.strftime("%d de %B de %Y") %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Productos del Proveedor -->
+        <div class="mt-8">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              Productos Suministrados (<%= @proveedor.productos.count %>)
+            </h3>
+            <% if @proveedor.productos.count > 0 %>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <%= @proveedor.productos.count %> producto<%= 's' if @proveedor.productos.count != 1 %>
+              </span>
+            <% end %>
+          </div>
+          
+          <% if @proveedor.productos.any? %>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="grid grid-cols-1 gap-3">
+                <% @proveedor.productos.limit(5).each do |producto| %>
+                  <div class="bg-white rounded-md p-3 shadow-sm">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <h4 class="font-medium text-gray-900"><%= producto.nombre %></h4>
+                        <p class="text-sm text-gray-500">SKU: <%= producto.sku %></p>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-sm font-medium text-gray-900">
+                          $<%= number_with_precision(producto.precio_venta, precision: 2) %>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                          Stock: <%= producto.cantidad_disponible %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+                
+                <% if @proveedor.productos.count > 5 %>
+                  <div class="text-center">
+                    <p class="text-sm text-gray-500">
+                      Y <%= @proveedor.productos.count - 5 %> producto<%= 's' if (@proveedor.productos.count - 5) != 1 %> más...
+                    </p>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <div class="bg-gray-50 rounded-lg p-6 text-center">
+              <div class="text-gray-500">
+                <div class="text-3xl mb-2">📦</div>
+                <p class="text-sm">No hay productos registrados para este proveedor.</p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

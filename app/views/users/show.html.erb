@@ -1,0 +1,157 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to users_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Usuarios
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500"><%= @user.nombre_completo %></span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center">
+              <span class="text-white font-bold text-xl">
+                <%= @user.nombre.first %><%= @user.apellido.first %>
+              </span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">
+                <%= @user.nombre_completo %>
+              </h1>
+              <p class="text-sm text-gray-600">
+                <span class="<%= cargo_color(@user.cargo) %> px-2 py-1 rounded-full text-xs font-medium">
+                  <%= cargo_icon(@user.cargo) %> <%= @user.cargo_humanizado %>
+                </span>
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex space-x-3">
+            <%= link_to "Editar", edit_user_path(@user), 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= link_to "Eliminar", user_path(@user), method: :delete,
+                data: { confirm: "¿Estás seguro de que quieres eliminar a #{@user.nombre_completo}?" },
+                class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Información Personal -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información Personal</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Nombre Completo</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @user.nombre_completo %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Identificación</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @user.identificacion %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Correo Electrónico</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <a href="mailto:<%= @user.email_address %>" class="text-blue-600 hover:text-blue-800">
+                    <%= @user.email_address %>
+                  </a>
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Información del Sistema -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Información del Sistema</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Cargo</dt>
+                <dd class="mt-1">
+                  <span class="<%= cargo_color(@user.cargo) %> px-3 py-1 rounded-full text-sm font-medium">
+                    <%= cargo_icon(@user.cargo) %> <%= @user.cargo_humanizado %>
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Fecha de Registro</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @user.created_at.strftime("%d de %B de %Y") %>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Última Actualización</dt>
+                <dd class="mt-1 text-sm text-gray-900">
+                  <%= @user.updated_at.strftime("%d de %B de %Y") %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Permisos y Responsabilidades -->
+        <div class="mt-8">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Permisos y Responsabilidades</h3>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <% case @user.cargo %>
+            <% when 'administrador' %>
+              <div class="text-red-800">
+                <h4 class="font-medium">👑 Administrador del Sistema</h4>
+                <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                  <li>Acceso completo a todas las funcionalidades</li>
+                  <li>Gestión de usuarios y permisos</li>
+                  <li>Configuración del sistema</li>
+                  <li>Reportes y estadísticas generales</li>
+                </ul>
+              </div>
+            <% when 'tecnico' %>
+              <div class="text-blue-800">
+                <h4 class="font-medium">🔧 Técnico de Servicio</h4>
+                <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                  <li>Gestión de servicios y reparaciones</li>
+                  <li>Manejo del inventario de repuestos</li>
+                  <li>Creación de órdenes de trabajo</li>
+                  <li>Reportes técnicos</li>
+                </ul>
+              </div>
+            <% when 'comercial' %>
+              <div class="text-green-800">
+                <h4 class="font-medium">💼 Personal Comercial</h4>
+                <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                  <li>Gestión de clientes y prospectos</li>
+                  <li>Ventas de productos y servicios</li>
+                  <li>Seguimiento de cotizaciones</li>
+                  <li>Reportes de ventas</li>
+                </ul>
+              </div>
+            <% when 'administrativo' %>
+              <div class="text-yellow-800">
+                <h4 class="font-medium">📊 Personal Administrativo</h4>
+                <ul class="mt-2 text-sm list-disc list-inside space-y-1">
+                  <li>Facturación y cobranza</li>
+                  <li>Gestión de proveedores</li>
+                  <li>Reportes financieros</li>
+                  <li>Control de inventarios</li>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

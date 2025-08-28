@@ -10,10 +10,9 @@ admin_user = User.find_or_create_by(email_address: "admin@mail") do |user|
   user.nombre = "Administrador"
   user.apellido = "del Sistema"
   user.identificacion = "0000000000"
-  user.telefono = "555-0000"
-  user.direccion = "Oficina Principal"
   user.cargo = :administrador
   user.password = "s3cr3t"
+  user.password_confirmation = "s3cr3t"
 end
 
 if admin_user.persisted?
@@ -28,10 +27,9 @@ tecnico_user = User.find_or_create_by(email_address: "tecnico@mail") do |user|
   user.nombre = "Juan Carlos"
   user.apellido = "Técnico"
   user.identificacion = "1111111111"
-  user.telefono = "555-1111"
-  user.direccion = "Taller Principal"
   user.cargo = :tecnico
   user.password = "s3cr3t"
+  user.password_confirmation = "s3cr3t"
 end
 
 if tecnico_user.persisted?
@@ -46,10 +44,9 @@ comercial_user = User.find_or_create_by(email_address: "comercial@mail") do |use
   user.nombre = "Ana María"
   user.apellido = "Comercial"
   user.identificacion = "2222222222"
-  user.telefono = "555-1111"
-  user.direccion = "Taller Principal"
   user.cargo = :comercial
   user.password = "s3cr3t"
+  user.password_confirmation = "s3cr3t"
 end
 
 if comercial_user.persisted?
@@ -223,7 +220,8 @@ usuarios = [
     nombre: "Admin",
     apellido: "Principal",
     email_address: "admin@tecnomotos.com",
-    password: "password123",
+    password: "s3cr3t",
+    password_confirmation: "s3cr3t",
     identificacion: "1234567890",
     cargo: "administrador"
   },
@@ -231,7 +229,8 @@ usuarios = [
     nombre: "Carlos",
     apellido: "Mecánico",
     email_address: "carlos.mecanico@tecnomotos.com", 
-    password: "password123",
+    password: "s3cr3t",
+    password_confirmation: "s3cr3t",
     identificacion: "0987654321",
     cargo: "tecnico"
   },
@@ -239,7 +238,8 @@ usuarios = [
     nombre: "Ana",
     apellido: "Ventas",
     email_address: "ana.ventas@tecnomotos.com",
-    password: "password123", 
+    password: "s3cr3t",
+    password_confirmation: "s3cr3t",
     identificacion: "1122334455",
     cargo: "comercial"
   },
@@ -247,7 +247,8 @@ usuarios = [
     nombre: "Luis",
     apellido: "Contador",
     email_address: "luis.contador@tecnomotos.com",
-    password: "password123",
+    password: "s3cr3t",
+    password_confirmation: "s3cr3t",
     identificacion: "5544332211", 
     cargo: "administrativo"
   }

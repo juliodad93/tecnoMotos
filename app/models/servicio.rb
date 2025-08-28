@@ -1,7 +1,7 @@
 class Servicio < ApplicationRecord
   self.table_name = 'servicios'
   
-  has_many :detalles_facturas, dependent: :destroy
+  has_many :detalles_facturas, class_name: 'DetalleFactura', dependent: :destroy
   has_many :detalles_servicio_vehiculos, dependent: :destroy
   has_many :detalles_servicio_productos, class_name: 'DetalleServicioProducto', dependent: :destroy
   

@@ -94,8 +94,7 @@
   <div class="bg-white shadow rounded-lg p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Agregar Producto</h2>
     
-    <%= form_with model: @detalle_servicio_producto, 
-                  url: "/detalles_servicio_vehiculos/#{@detalle_servicio_vehiculo.id}/detalles_servicio_productos",
+    <%= form_with model: [@detalle_servicio_vehiculo, @detalle_servicio_producto], 
                   local: true, 
                   class: "space-y-4" do |form| %>
       <% if @detalle_servicio_producto.errors.any? %>

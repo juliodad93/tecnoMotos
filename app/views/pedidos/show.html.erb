@@ -97,7 +97,7 @@
                     🏢 <%= @pedido.proveedor_nombre %>
                   <% end %>
                   <div class="text-xs text-gray-500 mt-1">
-                    Tel: <%= @pedido.proveedor.telefono %> | Email: <%= @pedido.proveedor.email %>
+                    Tel: <%= @pedido.proveedor.telefono %> | Email: <%= @pedido.proveedor.correo %>
                   </div>
                 </dd>
               </div>
@@ -172,9 +172,10 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-medium text-gray-900">Productos del Pedido</h3>
             <% unless @pedido.esta_completado? || @pedido.esta_cancelado? %>
-              <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-sm">
+              <%= link_to new_pedido_detalle_path(@pedido), 
+                  class: "bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 text-sm" do %>
                 + Agregar Producto
-              </button>
+              <% end %>
             <% end %>
           </div>
           

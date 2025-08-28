@@ -87,12 +87,25 @@ class Factura < ApplicationRecord
   def generar_numero_factura
     return if numero_factura.present?
     
-    ultima_factura = Factura.order(:numero_factura).last
-    if ultima_factura&.numero_factura.present?
-      ultimo_numero = ultima_factura.numero_factura.gsub(/\D/, '').to_i
-      self.numero_factura = "F#{(ultimo_numero + 1).to_s.rjust(6, '0')}"
-    else
-      self.numero_factura = "F000001"
+    # Usar una transacción para evitar race conditions
+    Factura.transaction do
+      # Buscar el último número numérico más alto, no por orden alfabético
+      ultimo_numero = Factura.where("numero_factura REGEXP ?", '^F[0-9]+$')
+                            .pluck(:numero_factura)
+                            .map { |num| num.gsub(/\D/, '').to_i }
+                            .max || 0
+      
+      # Generar el siguiente número
+      proximo_numero = ultimo_numero + 1
+      nuevo_numero = "F#{proximo_numero.to_s.rjust(6, '0')}"
+      
+      # Verificar que no existe (por si acaso)
+      while Factura.exists?(numero_factura: nuevo_numero)
+        proximo_numero += 1
+        nuevo_numero = "F#{proximo_numero.to_s.rjust(6, '0')}"
+      end
+      
+      self.numero_factura = nuevo_numero
     end
   end
   

@@ -81,7 +81,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200" id="pedidos-tbody">
               <% @pedidos.each do |pedido| %>
-                <tr class="hover:bg-gray-50 pedido-row" data-search="<%= "#{pedido.nombre_pedido} #{pedido.proveedor_nombre} #{pedido.usuario&.nombre} #{pedido.estado}".downcase %>">
+                <tr class="hover:bg-gray-50 pedido-row" data-search="<%= "#{pedido.nombre_pedido} #{pedido.proveedor_nombre} #{pedido.user&.nombre} #{pedido.estado}".downcase %>">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">

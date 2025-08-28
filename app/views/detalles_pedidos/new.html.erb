@@ -1,0 +1,222 @@
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-4" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1">
+        <li class="inline-flex items-center">
+          <%= link_to pedidos_path, class: "text-gray-700 hover:text-blue-600" do %>
+            Pedidos
+          <% end %>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <%= link_to pedido_path(@pedido), class: "text-gray-700 hover:text-blue-600" do %>
+              <%= @pedido.nombre_pedido %>
+            <% end %>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500">Agregar Producto</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Información del pedido -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <div>
+          <h3 class="text-lg font-semibold text-blue-900">
+            <%= @pedido.nombre_pedido %>
+          </h3>
+          <p class="text-blue-700">
+            Proveedor: <%= @pedido.proveedor_nombre %>
+          </p>
+          <p class="text-sm text-blue-600">
+            Estado: <%= @pedido.estado_humanizado %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-900">Agregar Producto al Pedido</h1>
+        <p class="mt-1 text-sm text-gray-600">
+          Selecciona un producto y especifica la cantidad a pedir.
+        </p>
+      </div>
+
+      <!-- Form -->
+      <div class="px-6 py-6">
+        <%= form_with model: [@pedido, @detalle_pedido], local: true, class: "space-y-6" do |form| %>
+          <% if @detalle_pedido.errors.any? %>
+            <div class="rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    Hay <%= pluralize(@detalle_pedido.errors.count, "error") %> que impide<%= "n" if @detalle_pedido.errors.count != 1 %> guardar este producto:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc list-inside space-y-1">
+                      <% @detalle_pedido.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Selección de Producto -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-900">Producto</h3>
+              
+              <div>
+                <%= form.label :producto_id, "Seleccionar Producto", class: "block text-sm font-medium text-gray-700 mb-1" %>
+                <%= form.collection_select :producto_id, 
+                    @productos, :id, 
+                    ->(producto) { "#{producto.nombre} - #{producto.proveedor.nombre} (Stock: #{producto.cantidad_disponible})" },
+                    { prompt: "Selecciona un producto" },
+                    { 
+                      class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                      onchange: "updateProductInfo(this)"
+                    } %>
+              </div>
+
+              <!-- Información del producto seleccionado -->
+              <div id="product-info" class="bg-gray-50 rounded-lg p-4" style="display: none;">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Información del Producto</h4>
+                <div id="product-details" class="text-sm text-gray-600">
+                  <!-- Se llenará con JavaScript -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Cantidad y Precio -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-900">Cantidad y Precio</h3>
+              
+              <div>
+                <%= form.label :cantidad, "Cantidad a Pedir", class: "block text-sm font-medium text-gray-700 mb-1" %>
+                <%= form.number_field :cantidad, 
+                    min: 1,
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    placeholder: "Ej: 10",
+                    onchange: "calculateSubtotal()" %>
+              </div>
+
+              <div>
+                <%= form.label :precio_unitario, "Precio Unitario", class: "block text-sm font-medium text-gray-700 mb-1" %>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 text-sm">$</span>
+                  </div>
+                  <%= form.number_field :precio_unitario, 
+                      step: 0.01,
+                      min: 0.01,
+                      class: "w-full pl-7 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                      placeholder: "0.00",
+                      onchange: "calculateSubtotal()" %>
+                </div>
+                <p class="mt-1 text-sm text-gray-500">Precio unitario de compra al proveedor</p>
+              </div>
+
+              <!-- Subtotal calculado -->
+              <div class="bg-green-50 rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium text-gray-900">Subtotal:</span>
+                  <span id="subtotal" class="text-lg font-bold text-green-600">$0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+            <%= link_to "Cancelar", pedido_path(@pedido),
+                class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+            
+            <%= form.submit "Agregar al Pedido",
+                class: "px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const productData = <%= raw @productos.map { |p| { 
+  id: p.id, 
+  nombre: p.nombre, 
+  proveedor: p.proveedor.nombre, 
+  stock: p.cantidad_disponible, 
+  precio_unitario: p.precio_unitario,
+  precio_venta: p.precio_venta,
+  sku: p.sku
+} }.to_json %>;
+
+function updateProductInfo(select) {
+  const productId = parseInt(select.value);
+  const productInfo = document.getElementById('product-info');
+  const productDetails = document.getElementById('product-details');
+  const precioField = document.getElementById('detalle_pedido_precio_unitario');
+  
+  if (productId) {
+    const product = productData.find(p => p.id === productId);
+    if (product) {
+      productDetails.innerHTML = `
+        <div class="space-y-1">
+          <div><span class="font-medium">SKU:</span> ${product.sku || 'N/A'}</div>
+          <div><span class="font-medium">Proveedor:</span> ${product.proveedor}</div>
+          <div><span class="font-medium">Stock actual:</span> ${product.stock} unidades</div>
+          <div><span class="font-medium">Precio de costo:</span> $${product.precio_unitario}</div>
+          <div><span class="font-medium">Precio de venta:</span> $${product.precio_venta}</div>
+        </div>
+      `;
+      
+      // Auto-llenar el precio unitario
+      if (precioField) {
+        precioField.value = product.precio_unitario;
+        calculateSubtotal();
+      }
+      
+      productInfo.style.display = 'block';
+    }
+  } else {
+    productInfo.style.display = 'none';
+    if (precioField) {
+      precioField.value = '';
+    }
+    calculateSubtotal();
+  }
+}
+
+function calculateSubtotal() {
+  const cantidad = parseFloat(document.getElementById('detalle_pedido_cantidad').value) || 0;
+  const precio = parseFloat(document.getElementById('detalle_pedido_precio_unitario').value) || 0;
+  const subtotal = cantidad * precio;
+  
+  document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+}
+
+// Inicializar cálculos
+document.addEventListener('DOMContentLoaded', function() {
+  calculateSubtotal();
+});
+</script>

@@ -35,7 +35,9 @@ Rails.application.routes.draw do
     end
     resources :detalles_facturas, path: 'detalles'
   end
-  resources :pedidos
+  resources :pedidos do
+    resources :detalles_pedidos, path: 'detalles'
+  end
   
   resources :detalles_servicio_vehiculos do
     member do

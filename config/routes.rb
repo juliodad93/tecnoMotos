@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resource :session
+  resource :session, except: [:show, :edit, :update]
   resources :passwords, param: :token
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     resources :vehiculos, except: [:index]
   end
   
-  resources :vehiculos, only: [:index, :show, :edit, :update, :destroy]
+  resources :vehiculos, only: [:index, :show, :edit, :update, :destroy, :new, :create]
   resources :users
   resources :proveedores
   resources :productos

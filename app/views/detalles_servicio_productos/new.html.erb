@@ -68,7 +68,7 @@
                   <%= number_to_currency(detalle.cantidad_usada * detalle.precio_unitario) %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <%= link_to "Eliminar", [@detalle_servicio_vehiculo, detalle], 
+                  <%= link_to "Eliminar", detalles_servicio_vehiculo_detalle_servicio_producto_path(@detalle_servicio_vehiculo, detalle), 
                       method: :delete,
                       data: { confirm: "¿Estás seguro de eliminar este producto?" },
                       class: "text-red-600 hover:text-red-900" %>

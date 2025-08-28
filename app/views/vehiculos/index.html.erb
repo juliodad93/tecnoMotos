@@ -8,20 +8,8 @@
           <div class="flex gap-2">
             <%= link_to "Ver Clientes", clientes_path, 
                 class: "bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
-            <div class="relative">
-              <select id="cliente-selector" onchange="redirectToNewVehiculo()" 
-                      class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 appearance-none pr-8">
-                <option value="">Nuevo Vehículo</option>
-                <% @clientes.each do |cliente| %>
-                  <option value="<%= new_cliente_vehiculo_path(cliente) %>">
-                    Para <%= "#{cliente.nombre} #{cliente.apellido}" %>
-                  </option>
-                <% end %>
-              </select>
-              <svg class="absolute right-2 top-3 w-4 h-4 text-white pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </div>
+            <%= link_to "Nuevo Vehículo", new_vehiculo_path, 
+                class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
           </div>
         </div>
       </div>
@@ -117,16 +105,6 @@
 </div>
 
 <script>
-function redirectToNewVehiculo() {
-  const selector = document.getElementById('cliente-selector');
-  const url = selector.value;
-  if (url) {
-    window.location.href = url;
-    // Reset selector
-    selector.value = '';
-  }
-}
-
 function filterVehiculos() {
   const searchTerm = document.getElementById('vehiculo-search').value.toLowerCase();
   const rows = document.querySelectorAll('.vehiculo-row');

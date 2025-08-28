@@ -69,11 +69,6 @@ module Authorization
     end
   end
 
-  def authorize_administrativo(controller, action)
-    # Por implementar después
-    redirect_to root_path, alert: 'Permisos administrativo en desarrollo.'
-  end
-
   def require_admin
     unless current_user&.admin?
       redirect_to root_path, alert: 'Solo los administradores pueden realizar esta acción.'

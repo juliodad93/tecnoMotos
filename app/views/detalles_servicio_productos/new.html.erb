@@ -68,7 +68,7 @@
                   <%= number_to_currency(detalle.cantidad_usada * detalle.precio_unitario) %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <%= link_to "Eliminar", detalles_servicio_vehiculo_detalle_servicio_producto_path(@detalle_servicio_vehiculo, detalle), 
+                  <%= link_to "Eliminar", "/detalles_servicio_vehiculos/#{@detalle_servicio_vehiculo.id}/detalles_servicio_productos/#{detalle.id}", 
                       method: :delete,
                       data: { confirm: "¿Estás seguro de eliminar este producto?" },
                       class: "text-red-600 hover:text-red-900" %>
@@ -94,7 +94,8 @@
   <div class="bg-white shadow rounded-lg p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Agregar Producto</h2>
     
-    <%= form_with model: [@detalle_servicio_vehiculo, @detalle_servicio_producto], 
+    <%= form_with model: @detalle_servicio_producto,
+                  url: "/detalles_servicio_vehiculos/#{@detalle_servicio_vehiculo.id}/detalles_servicio_productos",
                   local: true, 
                   class: "space-y-4" do |form| %>
       <% if @detalle_servicio_producto.errors.any? %>
@@ -171,10 +172,10 @@
     </div>
     <div class="space-x-3">
       <% if @detalle_servicio_vehiculo.servicio.detalles_servicio_productos.any? %>
-        <%= link_to finalizar_servicio_detalles_servicio_vehiculo_detalles_servicio_productos_path(@detalle_servicio_vehiculo), 
+        <%= button_to "/detalles_servicio_vehiculos/#{@detalle_servicio_vehiculo.id}/detalles_servicio_productos/finalizar_servicio",
             method: :post,
             data: { confirm: "¿Estás seguro de cerrar este servicio? Una vez cerrado no podrás modificar los productos." },
-            class: "inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition" do %>
+            class: "inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition border-0" do %>
           <svg width="16" height="16" style="width: 16px; height: 16px;" class="mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>

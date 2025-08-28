@@ -2,7 +2,17 @@ class ProductosController < ApplicationController
   before_action :set_producto, only: [:show, :edit, :update, :destroy]
 
   def index
-    @productos = Producto.includes(:proveedor).order(:nombre)
+    @productos = Producto.includes(:proveedor)
+    
+    if params[:buscar].present?
+      buscar = params[:buscar].strip
+      @productos = @productos.where(
+        "nombre LIKE ? COLLATE NOCASE OR descripcion LIKE ? COLLATE NOCASE OR sku LIKE ? COLLATE NOCASE",
+        "%#{buscar}%", "%#{buscar}%", "%#{buscar}%"
+      )
+    end
+    
+    @productos = @productos.order(:nombre)
   end
 
   def show

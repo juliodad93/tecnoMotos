@@ -49,6 +49,38 @@
             </div>
           <% end %>
 
+          <!-- Selección de Cliente -->
+          <div>
+            <%= form.label :cliente_id, "Cliente", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.select :cliente_id, 
+                options_from_collection_for_select(@clientes, :id, ->(c) { "#{c.nombre} #{c.apellido} - #{c.telefono}" }, @servicio.cliente_id),
+                { prompt: "Selecciona un cliente" },
+                { 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                  required: true,
+                  id: "cliente_select"
+                } %>
+            <p class="mt-1 text-xs text-gray-500">Cliente para quien se realizará el servicio</p>
+          </div>
+
+          <!-- Selección de Vehículo -->
+          <div>
+            <%= form.label :vehiculo_id, "Vehículo", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <select name="servicio[vehiculo_id]" id="vehiculo_select" 
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" 
+                    required>
+              <option value="">Primero selecciona un cliente</option>
+              <% @vehiculos.each do |vehiculo| %>
+                <option value="<%= vehiculo.id %>" 
+                        data-cliente-id="<%= vehiculo.cliente_id %>"
+                        <%= 'selected' if @servicio.vehiculo_id == vehiculo.id %>>
+                  <%= "#{vehiculo.matricula} - #{vehiculo.marca} #{vehiculo.modelo} (#{vehiculo.anio})" %>
+                </option>
+              <% end %>
+            </select>
+            <p class="mt-1 text-xs text-gray-500">Vehículo en el que se realizará el servicio</p>
+          </div>
+
           <!-- Nombre del servicio -->
           <div>
             <%= form.label :nombre, "Nombre del Servicio", class: "block text-sm font-medium text-gray-700 mb-2" %>
@@ -117,6 +149,15 @@
                 { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" } %>
           </div>
 
+          <!-- Fecha Agendada -->
+          <div>
+            <%= form.label :fecha_agendada, "Fecha y Hora Agendada", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.datetime_local_field :fecha_agendada,
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
+                min: Date.current.strftime("%Y-%m-%dT%H:%M") %>
+            <p class="mt-1 text-xs text-gray-500">Fecha y hora programada para realizar el servicio</p>
+          </div>
+
           <!-- Estado activo -->
           <div>
             <div class="flex items-center">
@@ -140,11 +181,37 @@
 </div>
 
 <script>
-  // Calcular duración automáticamente basada en la categoría (opcional)
+  // Filtrar vehículos por cliente seleccionado
   document.addEventListener('DOMContentLoaded', function() {
+    const clienteSelect = document.getElementById('cliente_select');
+    const vehiculoSelect = document.getElementById('vehiculo_select');
     const categoriaSelect = document.getElementById('servicio_categoria');
     const duracionInput = document.getElementById('servicio_duracion_estimada');
     
+    // Almacenar todas las opciones de vehículos
+    const allVehiculoOptions = Array.from(vehiculoSelect.options);
+    
+    if (clienteSelect && vehiculoSelect) {
+      clienteSelect.addEventListener('change', function() {
+        const selectedClienteId = this.value;
+        
+        // Limpiar opciones actuales excepto el prompt
+        vehiculoSelect.innerHTML = '<option value="">Selecciona un vehículo</option>';
+        
+        if (selectedClienteId) {
+          // Filtrar vehículos del cliente seleccionado
+          // Nota: Necesitaremos pasar los datos del servidor para hacer esto funcional
+          // Por ahora mantenemos todas las opciones
+          allVehiculoOptions.forEach(option => {
+            if (option.value !== '') {
+              vehiculoSelect.appendChild(option.cloneNode(true));
+            }
+          });
+        }
+      });
+    }
+    
+    // Calcular duración automáticamente basada en la categoría
     if (categoriaSelect && duracionInput && !duracionInput.value) {
       categoriaSelect.addEventListener('change', function() {
         const duracionesSugeridas = {
@@ -166,6 +233,43 @@
           duracionInput.value = duracionSugerida;
         }
       });
+    }
+
+    // Filtrar vehículos por cliente seleccionado
+    const clienteSelect = document.getElementById('cliente_select');
+    const vehiculoSelect = document.getElementById('vehiculo_select');
+    
+    if (clienteSelect && vehiculoSelect) {
+      // Guardar todas las opciones de vehículos
+      const todasLasOpciones = Array.from(vehiculoSelect.options);
+      
+      clienteSelect.addEventListener('change', function() {
+        const clienteSeleccionado = this.value;
+        
+        // Limpiar el select de vehículos
+        vehiculoSelect.innerHTML = '';
+        
+        // Agregar opción por defecto
+        const opcionDefault = document.createElement('option');
+        opcionDefault.value = '';
+        opcionDefault.textContent = clienteSeleccionado ? 'Selecciona un vehículo' : 'Primero selecciona un cliente';
+        vehiculoSelect.appendChild(opcionDefault);
+        
+        if (clienteSeleccionado) {
+          // Filtrar y agregar solo los vehículos del cliente seleccionado
+          todasLasOpciones.forEach(opcion => {
+            if (opcion.value && opcion.dataset.clienteId === clienteSeleccionado) {
+              const nuevaOpcion = opcion.cloneNode(true);
+              vehiculoSelect.appendChild(nuevaOpcion);
+            }
+          });
+        }
+      });
+      
+      // Inicializar filtrado si ya hay un cliente seleccionado
+      if (clienteSelect.value) {
+        clienteSelect.dispatchEvent(new Event('change'));
+      }
     }
   });
 </script>

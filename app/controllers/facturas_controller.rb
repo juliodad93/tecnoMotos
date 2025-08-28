@@ -6,9 +6,17 @@ class FacturasController < ApplicationController
   def index
     @facturas = Factura.includes(:cliente, :user).order(created_at: :desc)
     
+    # Búsqueda por cliente
+    if params[:buscar].present?
+      buscar = params[:buscar].strip
+      @facturas = @facturas.joins(:cliente).where(
+        "clientes.nombre LIKE ? COLLATE NOCASE OR clientes.apellido LIKE ? COLLATE NOCASE OR clientes.identificacion LIKE ? COLLATE NOCASE",
+        "%#{buscar}%", "%#{buscar}%", "%#{buscar}%"
+      )
+    end
+    
     # Filtros
     @facturas = @facturas.where(estado: params[:estado]) if params[:estado].present?
-    @facturas = @facturas.where(cliente_id: params[:cliente_id]) if params[:cliente_id].present?
     
     # Filtro por mes/año
     if params[:mes].present? && params[:año].present?

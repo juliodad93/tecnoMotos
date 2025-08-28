@@ -240,6 +240,8 @@
         class: "text-gray-600 hover:text-gray-900 font-medium" %>
     
     <div class="flex space-x-3">
+      <%= link_to "Editar", edit_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
+          class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
       <%= link_to "Ver Vehículo", @detalle_servicio_vehiculo.vehiculo, 
           class: "text-blue-600 hover:text-blue-900 font-medium" %>
       <%= link_to "Ver Cliente", @detalle_servicio_vehiculo.cliente, 

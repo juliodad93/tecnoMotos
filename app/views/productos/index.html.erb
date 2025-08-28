@@ -13,6 +13,24 @@
           <%= link_to "Nuevo Producto", new_producto_path, 
               class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
         </div>
+        
+        <!-- Campo de búsqueda -->
+        <div class="mt-4">
+          <%= form_with url: productos_path, method: :get, local: true, class: "flex items-center space-x-4" do |form| %>
+            <div class="flex-1">
+              <%= form.text_field :buscar, 
+                  value: params[:buscar],
+                  placeholder: "Buscar productos por nombre, código o descripción...", 
+                  class: "w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+            <div class="flex space-x-2">
+              <%= form.submit "Buscar", 
+                  class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200" %>
+              <%= link_to "Limpiar", productos_path, 
+                  class: "bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition duration-200" %>
+            </div>
+          <% end %>
+        </div>
       </div>
 
       <!-- Productos Table -->

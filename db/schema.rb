@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_28_033544) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_043629) do
   create_table "clientes", force: :cascade do |t|
     t.string "nombre"
     t.string "apellido"
@@ -146,8 +146,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_033544) do
     t.datetime "fecha_registro"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "cliente_id"
+    t.integer "vehiculo_id"
+    t.datetime "fecha_agendada"
     t.index ["activo"], name: "index_servicios_on_activo"
     t.index ["categoria"], name: "index_servicios_on_categoria"
+    t.index ["cliente_id"], name: "index_servicios_on_cliente_id"
+    t.index ["vehiculo_id"], name: "index_servicios_on_vehiculo_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -200,6 +205,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_28_033544) do
   add_foreign_key "pedidos", "proveedores", column: "proveedor_id"
   add_foreign_key "pedidos", "users"
   add_foreign_key "productos", "proveedores", column: "proveedor_id"
+  add_foreign_key "servicios", "clientes"
+  add_foreign_key "servicios", "vehiculos"
   add_foreign_key "sessions", "users"
   add_foreign_key "vehiculos", "clientes"
 end

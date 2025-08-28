@@ -16,6 +16,9 @@ Rails.application.routes.draw do
   root "home#index"
   
   resources :clientes do
+    collection do
+      get :search
+    end
     resources :vehiculos, except: [:index]
   end
   

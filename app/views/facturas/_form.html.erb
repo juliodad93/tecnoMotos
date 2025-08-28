@@ -41,10 +41,20 @@
 
         <div>
           <%= form.label :cliente_id, "Cliente", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.select :cliente_id, 
-                         options_from_collection_for_select(@clientes, :id, :nombre_completo, @factura.cliente_id), 
-                         { prompt: "Seleccionar cliente" }, 
-                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+          <div class="relative">
+            <input type="text" 
+                   id="cliente_search" 
+                   placeholder="Buscar por nombre o cédula..." 
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   autocomplete="off"
+                   value="<%= @factura.cliente ? "#{@factura.cliente.nombre} #{@factura.cliente.apellido} - #{@factura.cliente.identificacion}" : "" %>" />
+            <%= form.hidden_field :cliente_id, id: "cliente_id_hidden" %>
+            
+            <!-- Dropdown de resultados -->
+            <div id="cliente_results" class="absolute z-50 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg hidden max-h-60 overflow-y-auto">
+              <!-- Los resultados se cargarán aquí -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -152,8 +162,79 @@
 </div>
 
 <script>
-  // Calcular total automáticamente
+  // Autocompletado de clientes
   document.addEventListener('DOMContentLoaded', function() {
+    const clienteSearch = document.getElementById('cliente_search');
+    const clienteResults = document.getElementById('cliente_results');
+    const clienteIdHidden = document.getElementById('cliente_id_hidden');
+    let searchTimeout;
+
+    if (clienteSearch && clienteResults && clienteIdHidden) {
+      clienteSearch.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        // Limpiar timeout anterior
+        clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+          clienteResults.classList.add('hidden');
+          return;
+        }
+
+        // Delay para evitar muchas requests
+        searchTimeout = setTimeout(() => {
+          fetch(`/clientes/search?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+              clienteResults.innerHTML = '';
+              
+              if (data.length === 0) {
+                clienteResults.innerHTML = '<div class="px-3 py-2 text-gray-500 text-sm">No se encontraron clientes</div>';
+              } else {
+                data.forEach(cliente => {
+                  const div = document.createElement('div');
+                  div.className = 'px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0';
+                  div.innerHTML = `
+                    <div class="text-sm font-medium text-gray-900">${cliente.text}</div>
+                    <div class="text-xs text-gray-500">${cliente.telefono || ''} ${cliente.correo || ''}</div>
+                  `;
+                  
+                  div.addEventListener('click', function() {
+                    clienteSearch.value = cliente.text;
+                    clienteIdHidden.value = cliente.id;
+                    clienteResults.classList.add('hidden');
+                  });
+                  
+                  clienteResults.appendChild(div);
+                });
+              }
+              
+              clienteResults.classList.remove('hidden');
+            })
+            .catch(error => {
+              console.error('Error buscando clientes:', error);
+              clienteResults.innerHTML = '<div class="px-3 py-2 text-red-500 text-sm">Error al buscar clientes</div>';
+              clienteResults.classList.remove('hidden');
+            });
+        }, 300);
+      });
+
+      // Cerrar resultados cuando se hace clic fuera
+      document.addEventListener('click', function(e) {
+        if (!clienteSearch.contains(e.target) && !clienteResults.contains(e.target)) {
+          clienteResults.classList.add('hidden');
+        }
+      });
+
+      // Limpiar cliente seleccionado si se borra el texto
+      clienteSearch.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+          clienteIdHidden.value = '';
+        }
+      });
+    }
+
+    // Calcular total automáticamente
     const subtotalInput = document.getElementById('subtotal_input');
     const impuestosInput = document.getElementById('impuestos_input');
     const totalInput = document.getElementById('total_input');

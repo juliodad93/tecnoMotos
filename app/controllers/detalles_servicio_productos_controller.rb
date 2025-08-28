@@ -90,6 +90,10 @@ class DetallesServicioProductosController < ApplicationController
     
     # Cerrar el servicio
     @detalle_servicio_vehiculo.update!(fecha_fin: Time.current)
+    
+    # Actualizar el servicio base a completado (inactivo)
+    @detalle_servicio_vehiculo.servicio.update!(activo: false)
+    
     redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
                 notice: 'Servicio cerrado exitosamente con productos registrados.'
   end

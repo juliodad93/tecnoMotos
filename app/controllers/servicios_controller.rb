@@ -4,8 +4,8 @@ class ServiciosController < ApplicationController
   before_action :set_servicio, only: [:show, :edit, :update, :destroy]
 
   def index
-    @servicios = Servicio.all.order(:categoria, :nombre)
-    @categorias = Servicio.distinct.pluck(:categoria).compact.sort
+    @servicios = Servicio.activos.order(:categoria, :nombre)
+    @categorias = Servicio.activos.distinct.pluck(:categoria).compact.sort
   end
 
   def show
@@ -14,6 +14,8 @@ class ServiciosController < ApplicationController
   def new
     @servicio = Servicio.new
     @servicio.activo = true
+    @clientes = Cliente.order(:nombre, :apellido)
+    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
   end
 
   def create
@@ -23,17 +25,23 @@ class ServiciosController < ApplicationController
     if @servicio.save
       redirect_to @servicio, notice: 'Servicio creado exitosamente.'
     else
+      @clientes = Cliente.order(:nombre, :apellido)
+      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    @clientes = Cliente.order(:nombre, :apellido)
+    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
   end
 
   def update
     if @servicio.update(servicio_params)
       redirect_to @servicio, notice: 'Servicio actualizado exitosamente.'
     else
+      @clientes = Cliente.order(:nombre, :apellido)
+      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
       render :edit, status: :unprocessable_entity
     end
   end
@@ -56,6 +64,6 @@ class ServiciosController < ApplicationController
   end
 
   def servicio_params
-    params.require(:servicio).permit(:nombre, :descripcion, :precio_base, :duracion_estimada, :categoria, :activo)
+    params.require(:servicio).permit(:nombre, :descripcion, :precio_base, :duracion_estimada, :categoria, :activo, :cliente_id, :vehiculo_id, :fecha_agendada)
   end
 end

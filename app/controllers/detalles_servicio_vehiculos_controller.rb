@@ -65,7 +65,9 @@ class DetallesServicioVehiculosController < ApplicationController
   end
 
   def edit
-    @servicios = Servicio.activos.order(:nombre)
+    # Incluir todos los servicios para permitir editar servicios en progreso, 
+    # incluso si el servicio original fue marcado como inactivo
+    @servicios = Servicio.all.order(:nombre)
     @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
   end
 
@@ -73,7 +75,7 @@ class DetallesServicioVehiculosController < ApplicationController
     if @detalle_servicio_vehiculo.update(detalle_servicio_vehiculo_params)
       redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), notice: 'Detalle del servicio actualizado exitosamente.'
     else
-      @servicios = Servicio.activos.order(:nombre)
+      @servicios = Servicio.all.order(:nombre)
       @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
       render :edit
     end

@@ -70,7 +70,7 @@
                       </div>
                       <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">
-                          <%= link_to servicio.nombre, servicio_path(servicio),
+                          <%= link_to "#{servicio.vehiculo&.matricula} - #{servicio.nombre}", servicio_path(servicio),
                               class: "hover:text-blue-600" %>
                         </div>
                         <% if servicio.descripcion.present? %>
@@ -122,9 +122,13 @@
                           class: "text-blue-600 hover:text-blue-900" %>
                       <%= link_to "Editar", edit_servicio_path(servicio),
                           class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Eliminar", servicio_path(servicio), method: :delete,
-                          data: { confirm: "¿Estás seguro de que quieres eliminar #{servicio.nombre}?" },
-                          class: "text-red-600 hover:text-red-900" %>
+                      <%= button_to "Eliminar", servicio_path(servicio), 
+                          method: :delete,
+                          data: { 
+                            confirm: "¿Estás seguro de que quieres eliminar #{servicio.nombre}?"
+                          },
+                          class: "text-red-600 hover:text-red-900 bg-transparent border-none p-0 underline cursor-pointer",
+                          form_class: "inline" %>
                     </div>
                   </td>
                 </tr>

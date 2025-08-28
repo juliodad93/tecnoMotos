@@ -157,17 +157,37 @@
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <div class="flex items-center justify-center space-x-2">
+                    <div class="flex items-center justify-center space-x-1">
                       <%= link_to "Ver", pedido_path(pedido), 
-                          class: "text-blue-600 hover:text-blue-900" %>
-                      <% if pedido.puede_editarse? %>
-                        <%= link_to "Editar", edit_pedido_path(pedido), 
-                            class: "text-indigo-600 hover:text-indigo-900" %>
+                          class: "text-blue-600 hover:text-blue-900 text-xs" %>
+                      
+                      <!-- Botones de cambio de estado -->
+                      <% case pedido.estado %>
+                      <% when 'pendiente' %>
+                        <%= button_to "📤", marcar_como_enviado_pedido_path(pedido), method: :patch,
+                            title: "Marcar como Enviado",
+                            class: "text-blue-600 hover:text-blue-800 border-0 bg-transparent p-1",
+                            data: { confirm: "¿Marcar como enviado?" } %>
+                        <%= button_to "❌", cancelar_pedido_path(pedido), method: :patch,
+                            title: "Cancelar Pedido",
+                            class: "text-red-600 hover:text-red-800 border-0 bg-transparent p-1",
+                            data: { confirm: "¿Cancelar pedido?" } %>
+                      <% when 'enviado' %>
+                        <%= button_to "📥", marcar_como_recibido_pedido_path(pedido), method: :patch,
+                            title: "Marcar como Recibido",
+                            class: "text-purple-600 hover:text-purple-800 border-0 bg-transparent p-1",
+                            data: { confirm: "¿Marcar como recibido?" } %>
+                      <% when 'recibido' %>
+                        <%= button_to "✅", marcar_como_completado_pedido_path(pedido), method: :patch,
+                            title: "Marcar como Completado",
+                            class: "text-green-600 hover:text-green-800 border-0 bg-transparent p-1",
+                            data: { confirm: "¿Marcar como completado?" } %>
                       <% end %>
-                      <% if pedido.puede_cancelarse? %>
-                        <%= link_to "Eliminar", pedido_path(pedido), method: :delete,
-                            data: { confirm: "¿Estás seguro de que quieres eliminar el pedido #{pedido.nombre_pedido}?" },
-                            class: "text-red-600 hover:text-red-900" %>
+                      
+                      <% if pedido.puede_editarse? %>
+                        <%= link_to "✏️", edit_pedido_path(pedido), 
+                            title: "Editar",
+                            class: "text-indigo-600 hover:text-indigo-900 text-xs" %>
                       <% end %>
                     </div>
                   </td>

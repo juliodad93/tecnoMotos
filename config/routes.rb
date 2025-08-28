@@ -27,7 +27,9 @@ Rails.application.routes.draw do
   resources :facturas do
     member do
       patch :marcar_como_pagada
+      get :marcar_como_pagada
       patch :anular
+      get :anular
     end
     collection do
       get :desde_servicios
@@ -36,6 +38,12 @@ Rails.application.routes.draw do
     resources :detalles_facturas, path: 'detalles'
   end
   resources :pedidos do
+    member do
+      patch :marcar_como_enviado
+      patch :marcar_como_recibido
+      patch :marcar_como_completado
+      patch :cancelar
+    end
     resources :detalles_pedidos, path: 'detalles'
   end
   

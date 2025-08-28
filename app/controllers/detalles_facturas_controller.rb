@@ -13,7 +13,7 @@ class DetallesFacturasController < ApplicationController
 
   def new
     @detalle_factura = @factura.detalles_facturas.build
-    @productos = Product.activos.order(:nombre) if defined?(Product)
+    @productos = Producto.order(:nombre)
     @servicios = Servicio.order(:nombre) if defined?(Servicio)
     @trabajos_facturables = DetalleServicioVehiculo.completados
                                                    .includes(:vehiculo)
@@ -27,9 +27,9 @@ class DetallesFacturasController < ApplicationController
     if @detalle_factura.save
       # Recalcular totales de la factura
       @factura.calcular_totales!
-      redirect_to [@factura, @detalle_factura], notice: 'Detalle agregado exitosamente.'
+      redirect_to factura_detalles_factura_path(@factura, @detalle_factura), notice: 'Detalle agregado exitosamente.'
     else
-      @productos = Product.activos.order(:nombre) if defined?(Product)
+      @productos = Producto.order(:nombre)
       @servicios = Servicio.order(:nombre) if defined?(Servicio)
       @trabajos_facturables = DetalleServicioVehiculo.completados
                                                      .includes(:vehiculo)
@@ -40,7 +40,7 @@ class DetallesFacturasController < ApplicationController
   end
 
   def edit
-    @productos = Product.activos.order(:nombre) if defined?(Product)
+    @productos = Producto.order(:nombre)
     @servicios = Servicio.order(:nombre) if defined?(Servicio)
     @trabajos_facturables = DetalleServicioVehiculo.completados
                                                    .includes(:vehiculo)
@@ -53,9 +53,9 @@ class DetallesFacturasController < ApplicationController
     if @detalle_factura.update(detalle_factura_params)
       # Recalcular totales de la factura
       @factura.calcular_totales!
-      redirect_to [@factura, @detalle_factura], notice: 'Detalle actualizado exitosamente.'
+      redirect_to factura_detalles_factura_path(@factura, @detalle_factura), notice: 'Detalle actualizado exitosamente.'
     else
-      @productos = Product.activos.order(:nombre) if defined?(Product)
+      @productos = Producto.order(:nombre)
       @servicios = Servicio.order(:nombre) if defined?(Servicio)
       render :edit, status: :unprocessable_entity
     end

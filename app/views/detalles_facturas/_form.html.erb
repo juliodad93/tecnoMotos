@@ -1,5 +1,5 @@
 <div class="bg-white rounded-lg shadow border p-6">
-  <%= form_with model: [@factura, @detalle_factura], local: true, class: "space-y-6" do |form| %>
+  <%= form_with model: @detalle_factura, url: @detalle_factura.new_record? ? factura_detalles_facturas_path(@factura) : factura_detalles_factura_path(@factura, @detalle_factura), local: true, class: "space-y-6" do |form| %>
     <% if @detalle_factura.errors.any? %>
       <div class="bg-red-50 border border-red-200 rounded-lg p-4">
         <div class="flex">
@@ -55,7 +55,9 @@
           <%= form.select :producto_id, 
                          options_from_collection_for_select(@productos || [], :id, :nombre, @detalle_factura.producto_id), 
                          { prompt: "Seleccionar producto" }, 
-                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                           id: "producto_select",
+                           onchange: "cargarPrecioProducto()" } %>
         </div>
 
         <!-- Selector de servicio (solo si tipo = servicio) -->
@@ -64,7 +66,9 @@
           <%= form.select :servicio_id, 
                          options_from_collection_for_select(@servicios || [], :id, :nombre, @detalle_factura.servicio_id), 
                          { prompt: "Seleccionar servicio" }, 
-                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
+                         { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+                           id: "servicio_select",
+                           onchange: "cargarPrecioServicio()" } %>
         </div>
 
         <!-- Selector de trabajo de servicio (solo si tipo = servicio_vehiculo) -->
@@ -72,7 +76,7 @@
           <%= form.label :detalle_servicio_vehiculo_id, "Trabajo de Servicio", class: "block text-sm font-medium text-gray-700 mb-1" %>
           <%= form.select :detalle_servicio_vehiculo_id, 
                          options_from_collection_for_select(@trabajos_facturables || [], :id, 
-                           proc { |t| "#{t.vehiculo.placa} - #{t.descripcion} (#{t.duracion_horas}h)" }, 
+                           proc { |t| "#{t.vehiculo.matricula} - #{t.descripcion} (#{t.duracion_horas}h)" }, 
                            @detalle_factura.detalle_servicio_vehiculo_id), 
                          { prompt: "Seleccionar trabajo completado" }, 
                          { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
@@ -126,6 +130,40 @@
 </div>
 
 <script>
+// Precios de productos
+const preciosProductos = {
+  <% (@productos || []).each do |producto| %>
+    <%= producto.id %>: <%= producto.precio_venta %>,
+  <% end %>
+};
+
+// Precios de servicios
+const preciosServicios = {
+  <% (@servicios || []).each do |servicio| %>
+    <%= servicio.id %>: <%= servicio.precio_base || 0 %>,
+  <% end %>
+};
+
+function cargarPrecioProducto() {
+  const productoSelect = document.getElementById('producto_select');
+  const costoItemField = document.getElementById('costo_item_field');
+  
+  if (productoSelect.value && preciosProductos[productoSelect.value]) {
+    costoItemField.value = preciosProductos[productoSelect.value];
+    calcularSubtotal();
+  }
+}
+
+function cargarPrecioServicio() {
+  const servicioSelect = document.getElementById('servicio_select');
+  const costoItemField = document.getElementById('costo_item_field');
+  
+  if (servicioSelect.value && preciosServicios[servicioSelect.value]) {
+    costoItemField.value = preciosServicios[servicioSelect.value];
+    calcularSubtotal();
+  }
+}
+
 function toggleItemFields() {
   const tipoSelect = document.getElementById('tipo_item_select');
   const productoField = document.getElementById('producto_field');

@@ -19,9 +19,9 @@
         <%= link_to "🔧 Registrar Productos y Cerrar", cerrar_servicio_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
             class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition" %>
       <% elsif @detalle_servicio_vehiculo.completado? %>
-        <%= link_to "🧾 Crear Factura", crear_desde_servicio_facturas_path(servicio_id: @detalle_servicio_vehiculo.id), 
+        <%= button_to "🧾 Crear Factura", crear_desde_servicio_facturas_path(servicio_id: @detalle_servicio_vehiculo.id), 
             method: :post,
-            class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition" %>
+            class: "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition border-0" %>
       <% end %>
       <%= link_to "Editar", edit_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), 
           class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition" %>

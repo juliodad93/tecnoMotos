@@ -1,7 +1,7 @@
 class PedidosController < ApplicationController
   include Authentication
   
-  before_action :set_pedido, only: [:show, :edit, :update, :destroy]
+  before_action :set_pedido, only: [:show, :edit, :update, :destroy, :marcar_como_enviado, :marcar_como_recibido, :marcar_como_completado, :cancelar]
 
   def index
     @pedidos = Pedido.includes(:proveedor, :user).order(created_at: :desc)
@@ -74,6 +74,42 @@ class PedidosController < ApplicationController
     redirect_to pedidos_path, notice: 'Pedido eliminado exitosamente.'
   end
 
+  def marcar_como_enviado
+    if @pedido.update(estado: 'enviado')
+      redirect_to pedidos_path, notice: 'Pedido marcado como enviado exitosamente.'
+    else
+      redirect_to pedidos_path, alert: 'No se pudo actualizar el estado del pedido.'
+    end
+  end
+
+  def marcar_como_recibido
+    if @pedido.update(estado: 'recibido')
+      redirect_to pedidos_path, notice: 'Pedido marcado como recibido exitosamente.'
+    else
+      redirect_to pedidos_path, alert: 'No se pudo actualizar el estado del pedido.'
+    end
+  end
+
+  def marcar_como_completado
+    if @pedido.update(estado: 'completado')
+      redirect_to pedidos_path, notice: 'Pedido marcado como completado exitosamente.'
+    else
+      redirect_to pedidos_path, alert: 'No se pudo actualizar el estado del pedido.'
+    end
+  end
+
+  def cancelar
+    if @pedido.puede_cancelarse?
+      if @pedido.update(estado: 'cancelado')
+        redirect_to pedidos_path, notice: 'Pedido cancelado exitosamente.'
+      else
+        redirect_to pedidos_path, alert: 'No se pudo cancelar el pedido.'
+      end
+    else
+      redirect_to pedidos_path, alert: 'Este pedido no se puede cancelar en su estado actual.'
+    end
+  end
+
   private
 
   def set_pedido
@@ -81,6 +117,7 @@ class PedidosController < ApplicationController
   end
 
   def pedido_params
-    params.require(:pedido).permit(:nombre_pedido, :fecha_pedido, :proveedor_id, :total, :estado)
+    params.require(:pedido).permit(:nombre_pedido, :fecha_pedido, :proveedor_id, :total, :estado,
+                                   detalles_pedidos_attributes: [:id, :producto_id, :cantidad, :precio_unitario, :_destroy])
   end
 end

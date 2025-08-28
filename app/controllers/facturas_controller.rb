@@ -45,12 +45,10 @@ class FacturasController < ApplicationController
     @factura.estado = 'pendiente'
     @factura.user = current_user
     
-    # Generar número de factura automáticamente
-    ultimo_numero = Factura.maximum(:numero_factura).to_i
-    @factura.numero_factura = ultimo_numero + 1
+    # El número de factura se genera automáticamente en el modelo
     
     @clientes = Cliente.order(:nombre, :apellido)
-    @productos = Product.activos.order(:nombre) if defined?(Product)
+    @productos = Producto.order(:nombre)
     
     # Si viene de servicios, precargar información
     if params[:detalle_servicio_vehiculo_id].present?
@@ -76,17 +74,13 @@ class FacturasController < ApplicationController
     @factura = Factura.new(factura_params)
     @factura.user = current_user
     
-    # Generar número de factura si no se proporciona
-    if @factura.numero_factura.blank?
-      ultimo_numero = Factura.maximum(:numero_factura).to_i
-      @factura.numero_factura = ultimo_numero + 1
-    end
+    # El número de factura se genera automáticamente en el modelo
     
     if @factura.save
       redirect_to @factura, notice: 'Factura creada exitosamente.'
     else
       @clientes = Cliente.order(:nombre, :apellido)
-      @productos = Product.activos.order(:nombre) if defined?(Product)
+      @productos = Producto.order(:nombre)
       render :new, status: :unprocessable_entity
     end
   end
@@ -98,7 +92,7 @@ class FacturasController < ApplicationController
     end
     
     @clientes = Cliente.order(:nombre, :apellido)
-    @productos = Product.activos.order(:nombre) if defined?(Product)
+    @productos = Producto.order(:nombre)
   end
 
   def update
@@ -111,7 +105,7 @@ class FacturasController < ApplicationController
       redirect_to @factura, notice: 'Factura actualizada exitosamente.'
     else
       @clientes = Cliente.order(:nombre, :apellido)
-      @productos = Product.activos.order(:nombre) if defined?(Product)
+      @productos = Producto.order(:nombre)
       render :edit, status: :unprocessable_entity
     end
   end
@@ -168,14 +162,18 @@ class FacturasController < ApplicationController
   def crear_desde_servicio
     @servicio_detalle = DetalleServicioVehiculo.find(params[:servicio_id])
     
-    unless @servicio_detalle.cerrado?
-      redirect_to @servicio_detalle, alert: 'El servicio debe estar cerrado para crear una factura.'
+    unless @servicio_detalle.puede_facturarse?
+      if @servicio_detalle.en_progreso?
+        redirect_to detalles_servicio_vehiculo_path(@servicio_detalle), alert: 'El servicio debe estar completado para crear una factura.'
+      else
+        redirect_to detalles_servicio_vehiculo_path(@servicio_detalle), alert: 'Este servicio ya ha sido facturado.'
+      end
       return
     end
     
     # Verificar si ya existe una factura para este servicio
     factura_existente = Factura.joins(:detalles_facturas)
-                              .where(detalles_facturas: { servicio_detalle_id: @servicio_detalle.id })
+                              .where(detalles_facturas: { detalle_servicio_vehiculo_id: @servicio_detalle.id })
                               .first
                               
     if factura_existente
@@ -189,40 +187,42 @@ class FacturasController < ApplicationController
     @factura.estado = 'pendiente'
     @factura.user = current_user
     @factura.metodo_pago = 'efectivo'
-    
-    # Generar número de factura
-    ultimo_numero = Factura.maximum(:numero_factura).to_i
-    @factura.numero_factura = ultimo_numero + 1
+    # Valores temporales para pasar validaciones
+    @factura.subtotal = 0.01
+    @factura.total = 0.01
     
     if @factura.save
       # Crear detalle para el servicio
-      detalle_servicio = @factura.detalles_facturas.build(
+      detalle_servicio = @factura.detalles_facturas.create!(
         producto_id: nil, # Es un servicio, no un producto
-        servicio_detalle_id: @servicio_detalle.id,
+        servicio_id: nil, # No usamos esto para servicios de vehículo
+        detalle_servicio_vehiculo_id: @servicio_detalle.id,
         descripcion: "Servicio: #{@servicio_detalle.servicio.nombre}",
         cantidad: 1,
-        precio_unitario: @servicio_detalle.precio_final,
-        subtotal: @servicio_detalle.precio_final
+        costo_item: @servicio_detalle.servicio.precio_base,
+        tipo_item: 'servicio_vehiculo'
       )
       
       # Crear detalles para los productos usados
-      @servicio_detalle.detalles_servicio_productos.each do |producto_servicio|
-        @factura.detalles_facturas.build(
+      @servicio_detalle.servicio.detalles_servicio_productos.each do |producto_servicio|
+        @factura.detalles_facturas.create!(
           producto_id: producto_servicio.producto_id,
-          servicio_detalle_id: @servicio_detalle.id,
+          servicio_id: nil,
+          detalle_servicio_vehiculo_id: nil,
           descripcion: producto_servicio.producto.nombre,
-          cantidad: producto_servicio.cantidad,
-          precio_unitario: producto_servicio.precio_unitario,
-          subtotal: producto_servicio.subtotal
+          cantidad: producto_servicio.cantidad_usada,
+          costo_item: producto_servicio.precio_unitario,
+          tipo_item: 'producto'
         )
       end
       
-      # Calcular totales
+      # Calcular totales correctos y guardar
       @factura.calcular_totales!
       
       redirect_to @factura, notice: 'Factura creada exitosamente desde el servicio.'
     else
-      redirect_to @servicio_detalle, alert: 'Error al crear la factura: ' + @factura.errors.full_messages.join(', ')
+      errors = @factura.errors.full_messages.join(', ')
+      redirect_to detalles_servicio_vehiculo_path(@servicio_detalle), alert: "Error al crear la factura inicial: #{errors}"
     end
   end
 
@@ -233,7 +233,7 @@ class FacturasController < ApplicationController
   end
 
   def factura_params
-    params.require(:factura).permit(:numero_factura, :fecha_factura, :cliente_id, :subtotal, 
+    params.require(:factura).permit(:fecha_factura, :cliente_id, :subtotal, 
                                    :impuestos, :total, :metodo_pago, :estado)
   end
 end

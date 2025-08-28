@@ -4,6 +4,7 @@ class Pedido < ApplicationRecord
   belongs_to :proveedor
   belongs_to :user
   has_many :detalles_pedidos, class_name: 'DetallePedido', dependent: :destroy
+  accepts_nested_attributes_for :detalles_pedidos, allow_destroy: true, reject_if: :all_blank
   
   validates :nombre_pedido, presence: true
   validates :fecha_pedido, presence: true

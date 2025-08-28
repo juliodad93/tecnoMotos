@@ -82,6 +82,11 @@ class Factura < ApplicationRecord
     "#{user.nombre} #{user.apellido}"
   end
   
+  def calcular_totales!
+    calcular_totales
+    save!
+  end
+  
   private
   
   def generar_numero_factura
@@ -89,10 +94,13 @@ class Factura < ApplicationRecord
     
     # Usar una transacción para evitar race conditions
     Factura.transaction do
-      # Buscar el último número numérico más alto, no por orden alfabético
-      ultimo_numero = Factura.where("numero_factura REGEXP ?", '^F[0-9]+$')
+      # Buscar todos los números de factura que empiecen con 'F' y extraer números
+      ultimo_numero = Factura.where("numero_factura LIKE ?", 'F%')
                             .pluck(:numero_factura)
-                            .map { |num| num.gsub(/\D/, '').to_i }
+                            .filter_map { |num| 
+                              match = num.match(/^F(\d+)$/)
+                              match ? match[1].to_i : nil
+                            }
                             .max || 0
       
       # Generar el siguiente número
@@ -110,15 +118,14 @@ class Factura < ApplicationRecord
   end
   
   def calcular_totales
-    return unless detalles_facturas.loaded? || detalles_facturas.any?
+    # Obtener todos los detalles (incluyendo los que están en memoria con build)
+    detalles = detalles_facturas.loaded? ? detalles_facturas.to_a : detalles_facturas
     
-    self.subtotal = detalles_facturas.sum { |detalle| detalle.cantidad * detalle.costo_item }
+    return if detalles.empty?
+    
+    self.subtotal = detalles.sum { |detalle| (detalle.cantidad || 0) * (detalle.costo_item || 0) }
     self.impuestos ||= 0
     self.total = subtotal + impuestos
   end
   
-  def calcular_totales!
-    calcular_totales
-    save!
-  end
 end

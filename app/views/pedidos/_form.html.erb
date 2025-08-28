@@ -55,9 +55,10 @@
             <div>
               <%= form.label :nombre_pedido, "Nombre del Pedido", class: "block text-sm font-medium text-gray-700 mb-2" %>
               <%= form.text_field :nombre_pedido, 
-                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm",
-                  placeholder: "Se genera automáticamente" %>
-              <p class="mt-1 text-xs text-gray-500">Deja vacío para generar automáticamente (PED-YYYYMMDD-001)</p>
+                  class: "block w-full rounded-md border-gray-300 bg-gray-50 text-gray-500 shadow-sm text-sm",
+                  placeholder: "Se genera automáticamente",
+                  readonly: true %>
+              <p class="mt-1 text-xs text-gray-500">Se genera automáticamente con formato (PED-YYYYMMDD-001)</p>
             </div>
 
             <!-- Fecha del pedido -->
@@ -104,6 +105,28 @@
             </div>
           </div>
 
+          <!-- Sección de productos -->
+          <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-900">🛍️ Productos del Pedido</h3>
+              <button type="button" id="agregar-producto-btn" 
+                      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                + Agregar Producto
+              </button>
+            </div>
+            
+            <div id="productos-container">
+              <!-- Los productos se cargarán aquí dinámicamente -->
+            </div>
+            
+            <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-medium text-gray-700">Total del Pedido:</span>
+                <span id="total-pedido" class="text-lg font-bold text-gray-900">$0.00</span>
+              </div>
+            </div>
+          </div>
+
           <!-- Información de estados -->
           <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
             <h3 class="text-sm font-medium text-blue-800 mb-2">📋 Estados del Pedido</h3>
@@ -145,3 +168,114 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let productoIndex = 0;
+  const productosContainer = document.getElementById('productos-container');
+  const agregarBtn = document.getElementById('agregar-producto-btn');
+  const totalPedido = document.getElementById('total-pedido');
+  const totalInput = document.querySelector('input[name="pedido[total]"]');
+
+  // Lista de productos disponibles
+  const productos = [
+    <% @productos.each do |producto| %>
+      {
+        id: <%= producto.id %>,
+        nombre: '<%= j producto.nombre %>',
+        precio: <%= producto.precio_unitario %>
+      },
+    <% end %>
+  ];
+
+  function crearFilaProducto(index) {
+    return `
+      <div class="producto-item border border-gray-200 rounded-lg p-4 mb-3" data-index="${index}">
+        <div class="grid grid-cols-4 gap-4 items-end">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Producto</label>
+            <select name="pedido[detalles_pedidos_attributes][${index}][producto_id]" 
+                    class="producto-select w-full rounded-md border-gray-300 text-sm" 
+                    data-index="${index}" required>
+              <option value="">Seleccionar producto</option>
+              ${productos.map(p => `<option value="${p.id}" data-precio="${p.precio}">${p.nombre}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+            <input type="number" 
+                   name="pedido[detalles_pedidos_attributes][${index}][cantidad]"
+                   class="cantidad-input w-full rounded-md border-gray-300 text-sm"
+                   data-index="${index}"
+                   min="1" value="1" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Precio Unitario</label>
+            <input type="number" 
+                   name="pedido[detalles_pedidos_attributes][${index}][precio_unitario]"
+                   class="precio-input w-full rounded-md border-gray-300 text-sm"
+                   data-index="${index}"
+                   step="0.01" min="0" required>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="subtotal text-lg font-bold text-gray-900">$0.00</span>
+            <button type="button" class="eliminar-producto text-red-600 hover:text-red-800 p-1"
+                    data-index="${index}" title="Eliminar producto">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function actualizarTotales() {
+    let total = 0;
+    document.querySelectorAll('.producto-item').forEach(item => {
+      const cantidad = parseFloat(item.querySelector('.cantidad-input').value) || 0;
+      const precio = parseFloat(item.querySelector('.precio-input').value) || 0;
+      const subtotal = cantidad * precio;
+      
+      item.querySelector('.subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      total += subtotal;
+    });
+    
+    totalPedido.textContent = `$${total.toFixed(2)}`;
+    totalInput.value = total.toFixed(2);
+  }
+
+  agregarBtn.addEventListener('click', function() {
+    const html = crearFilaProducto(productoIndex);
+    productosContainer.insertAdjacentHTML('beforeend', html);
+    productoIndex++;
+  });
+
+  productosContainer.addEventListener('change', function(e) {
+    if (e.target.classList.contains('producto-select')) {
+      const option = e.target.selectedOptions[0];
+      const precio = option.dataset.precio || 0;
+      const index = e.target.dataset.index;
+      const precioInput = document.querySelector(`input[data-index="${index}"].precio-input`);
+      precioInput.value = precio;
+      actualizarTotales();
+    }
+  });
+
+  productosContainer.addEventListener('input', function(e) {
+    if (e.target.classList.contains('cantidad-input') || e.target.classList.contains('precio-input')) {
+      actualizarTotales();
+    }
+  });
+
+  productosContainer.addEventListener('click', function(e) {
+    if (e.target.classList.contains('eliminar-producto')) {
+      const item = e.target.closest('.producto-item');
+      item.remove();
+      actualizarTotales();
+    }
+  });
+
+  // Agregar un producto por defecto
+  agregarBtn.click();
+});
+</script>

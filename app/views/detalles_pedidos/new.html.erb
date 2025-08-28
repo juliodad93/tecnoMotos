@@ -56,7 +56,7 @@
 
       <!-- Form -->
       <div class="px-6 py-6">
-        <%= form_with model: [@pedido, @detalle_pedido], local: true, class: "space-y-6" do |form| %>
+        <%= form_with model: @detalle_pedido, url: pedido_detalles_pedidos_path(@pedido), local: true, class: "space-y-6" do |form| %>
           <% if @detalle_pedido.errors.any? %>
             <div class="rounded-md bg-red-50 p-4">
               <div class="flex">

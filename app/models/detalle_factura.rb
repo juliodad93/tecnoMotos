@@ -19,6 +19,7 @@ class DetalleFactura < ApplicationRecord
   
   # Método para calcular subtotal
   def subtotal
+    return 0 if cantidad.nil? || costo_item.nil?
     cantidad * costo_item
   end
   

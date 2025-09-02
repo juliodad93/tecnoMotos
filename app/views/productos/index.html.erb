@@ -108,10 +108,12 @@
                           class: "text-blue-600 hover:text-blue-900" %>
                       <%= link_to "Editar", edit_producto_path(producto), 
                           class: "text-indigo-600 hover:text-indigo-900" %>
-                      <%= link_to "Eliminar", producto_path(producto), 
-                          method: :delete,
-                          data: { confirm: "¿Estás seguro de que quieres eliminar #{producto.nombre}?" },
-                          class: "text-red-600 hover:text-red-900" %>
+                      <%= form_with url: producto_path(producto), method: :delete, local: true, 
+                          class: "inline" do |form| %>
+                        <%= form.button "Eliminar", type: :submit,
+                            class: "text-red-600 hover:text-red-900 bg-transparent border-none p-0 cursor-pointer underline",
+                            style: "background: none; border: none; padding: 0; font-size: inherit;" %>
+                      <% end %>
                     </div>
                   </td>
                 </tr>
@@ -156,3 +158,4 @@
     </div>
   </div>
 </div>
+

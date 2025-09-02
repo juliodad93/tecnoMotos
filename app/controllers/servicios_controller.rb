@@ -15,7 +15,7 @@ class ServiciosController < ApplicationController
     @servicio = Servicio.new
     @servicio.activo = true
     @clientes = Cliente.order(:nombre, :apellido)
-    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+    @vehiculos = []
   end
 
   def create
@@ -26,14 +26,14 @@ class ServiciosController < ApplicationController
       redirect_to @servicio, notice: 'Servicio creado exitosamente.'
     else
       @clientes = Cliente.order(:nombre, :apellido)
-      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+      @vehiculos = @servicio.cliente ? @servicio.cliente.vehiculos.order(:matricula) : []
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @clientes = Cliente.order(:nombre, :apellido)
-    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+    @vehiculos = @servicio.cliente ? @servicio.cliente.vehiculos.order(:matricula) : []
   end
 
   def update
@@ -41,7 +41,7 @@ class ServiciosController < ApplicationController
       redirect_to @servicio, notice: 'Servicio actualizado exitosamente.'
     else
       @clientes = Cliente.order(:nombre, :apellido)
-      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+      @vehiculos = @servicio.cliente ? @servicio.cliente.vehiculos.order(:matricula) : []
       render :edit, status: :unprocessable_entity
     end
   end
@@ -55,6 +55,12 @@ class ServiciosController < ApplicationController
     
     @servicio.destroy
     redirect_to servicios_path, notice: 'Servicio eliminado exitosamente.'
+  end
+
+  def vehiculos_por_cliente
+    cliente = Cliente.find(params[:cliente_id])
+    vehiculos = cliente.vehiculos.order(:matricula).select(:id, :matricula, :marca, :modelo, :anio)
+    render json: vehiculos
   end
 
   private

@@ -6,6 +6,10 @@ class UsersController < ApplicationController
   end
 
   def show
+    # Los técnicos y comerciales solo pueden ver su propio perfil
+    if (current_user.cargo == 'tecnico' || current_user.cargo == 'comercial') && @user.id != current_user.id
+      redirect_to user_path(current_user), alert: 'Solo puedes ver tu propio perfil.'
+    end
   end
 
   def new
@@ -30,9 +34,19 @@ class UsersController < ApplicationController
   end
 
   def edit
+    # Los técnicos solo pueden editar su propio perfil
+    if current_user.cargo == 'tecnico' && @user.id != current_user.id
+      redirect_to edit_user_path(current_user), alert: 'Solo puedes editar tu propio perfil.'
+    end
   end
 
   def update
+    # Los técnicos solo pueden actualizar su propio perfil
+    if current_user.cargo == 'tecnico' && @user.id != current_user.id
+      redirect_to edit_user_path(current_user), alert: 'Solo puedes editar tu propio perfil.'
+      return
+    end
+    
     # Prevenir actualización a administrador desde el frontend
     if params[:user][:cargo] == 'administrador' && !@user.admin?
       @user.errors.add(:cargo, "no puede ser administrador. Los administradores solo pueden ser creados por el sistema.")

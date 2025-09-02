@@ -1,4 +1,6 @@
 class ProductosController < ApplicationController
+  include Authentication
+  
   before_action :set_producto, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -44,8 +46,14 @@ class ProductosController < ApplicationController
   end
 
   def destroy
-    @producto.destroy
-    redirect_to productos_path, notice: 'Producto eliminado exitosamente.'
+    begin
+      @producto.destroy!
+      redirect_to productos_path, notice: 'Producto eliminado exitosamente.'
+    rescue ActiveRecord::RecordNotDestroyed => e
+      redirect_to productos_path, alert: "No se pudo eliminar el producto: #{e.message}"
+    rescue StandardError => e
+      redirect_to productos_path, alert: "Error inesperado: #{e.message}"
+    end
   end
 
   private

@@ -23,7 +23,7 @@ class PedidosController < ApplicationController
     @pedido.user = current_user
     
     @proveedores = Proveedor.order(:nombre)
-    @productos = Producto.order(:nombre)
+    @productos = []
   end
 
   def create
@@ -34,7 +34,7 @@ class PedidosController < ApplicationController
       redirect_to @pedido, notice: 'Pedido creado exitosamente.'
     else
       @proveedores = Proveedor.order(:nombre)
-      @productos = Producto.order(:nombre)
+      @productos = @pedido.proveedor ? @pedido.proveedor.productos.order(:nombre) : []
       render :new, status: :unprocessable_entity
     end
   end
@@ -46,7 +46,7 @@ class PedidosController < ApplicationController
     end
     
     @proveedores = Proveedor.order(:nombre)
-    @productos = Producto.order(:nombre)
+    @productos = @pedido.proveedor ? @pedido.proveedor.productos.order(:nombre) : []
   end
 
   def update
@@ -59,7 +59,7 @@ class PedidosController < ApplicationController
       redirect_to @pedido, notice: 'Pedido actualizado exitosamente.'
     else
       @proveedores = Proveedor.order(:nombre)
-      @productos = Producto.order(:nombre)
+      @productos = @pedido.proveedor ? @pedido.proveedor.productos.order(:nombre) : []
       render :edit, status: :unprocessable_entity
     end
   end
@@ -108,6 +108,12 @@ class PedidosController < ApplicationController
     else
       redirect_to pedidos_path, alert: 'Este pedido no se puede cancelar en su estado actual.'
     end
+  end
+
+  def productos_por_proveedor
+    proveedor = Proveedor.find(params[:proveedor_id])
+    productos = proveedor.productos.order(:nombre).select(:id, :nombre, :precio_unitario)
+    render json: productos
   end
 
   private

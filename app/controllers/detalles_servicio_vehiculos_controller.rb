@@ -1,14 +1,14 @@
 class DetallesServicioVehiculosController < ApplicationController
   include Authentication
   
-  before_action :set_detalle_servicio_vehiculo, only: [:show, :edit, :update, :destroy, :cerrar_servicio]
+  before_action :set_detalle_servicio_vehiculo, only: [:show, :edit, :update, :destroy, :iniciar_servicio, :cerrar_servicio]
   before_action :require_non_tecnico, only: [:new, :create, :destroy]
 
   def index
     @detalles_servicio_vehiculos = DetalleServicioVehiculo.includes(:servicio, :vehiculo)
                                                           .order(created_at: :desc)
     
-    # Los técnicos solo pueden ver servicios pendientes (en progreso)
+    # Los técnicos solo pueden ver servicios no iniciados y en progreso
     if current_user.cargo == 'tecnico'
       @detalles_servicio_vehiculos = @detalles_servicio_vehiculos.where(fecha_fin: nil)
     else
@@ -37,8 +37,9 @@ class DetallesServicioVehiculosController < ApplicationController
     
     # Estadísticas
     @total_servicios = @detalles_servicio_vehiculos.count
-    @servicios_en_progreso = DetalleServicioVehiculo.where(fecha_fin: nil).count
-    @servicios_completados = DetalleServicioVehiculo.where.not(fecha_fin: nil).count
+    @servicios_no_iniciados = DetalleServicioVehiculo.no_iniciados.count
+    @servicios_en_progreso = DetalleServicioVehiculo.en_progreso.count
+    @servicios_completados = DetalleServicioVehiculo.completados.count
   end
 
   def show
@@ -47,19 +48,19 @@ class DetallesServicioVehiculosController < ApplicationController
 
   def new
     @detalle_servicio_vehiculo = DetalleServicioVehiculo.new
-    @servicios = Servicio.activos.order(:nombre)
-    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+    @servicios = Servicio.activos.includes(:cliente, :vehiculo).order(:nombre)
+    @vehiculos = []
   end
 
   def create
     @detalle_servicio_vehiculo = DetalleServicioVehiculo.new(detalle_servicio_vehiculo_params)
-    @detalle_servicio_vehiculo.fecha_inicio = Time.current
+    # No asignamos fecha_inicio automáticamente, permitimos que se inicie manualmente
     
     if @detalle_servicio_vehiculo.save
       redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), notice: 'Servicio aplicado al vehículo exitosamente.'
     else
-      @servicios = Servicio.activos.order(:nombre)
-      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+      @servicios = Servicio.activos.includes(:cliente, :vehiculo).order(:nombre)
+      @vehiculos = @detalle_servicio_vehiculo.servicio ? [@detalle_servicio_vehiculo.servicio.vehiculo] : []
       render :new
     end
   end
@@ -67,16 +68,16 @@ class DetallesServicioVehiculosController < ApplicationController
   def edit
     # Incluir todos los servicios para permitir editar servicios en progreso, 
     # incluso si el servicio original fue marcado como inactivo
-    @servicios = Servicio.all.order(:nombre)
-    @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+    @servicios = Servicio.all.includes(:cliente, :vehiculo).order(:nombre)
+    @vehiculos = [@detalle_servicio_vehiculo.servicio.vehiculo].compact
   end
 
   def update
     if @detalle_servicio_vehiculo.update(detalle_servicio_vehiculo_params)
       redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), notice: 'Detalle del servicio actualizado exitosamente.'
     else
-      @servicios = Servicio.all.order(:nombre)
-      @vehiculos = Vehiculo.joins(:cliente).order('clientes.nombre', 'vehiculos.matricula')
+      @servicios = Servicio.all.includes(:cliente, :vehiculo).order(:nombre)
+      @vehiculos = [@detalle_servicio_vehiculo.servicio.vehiculo].compact
       render :edit
     end
   end
@@ -86,6 +87,16 @@ class DetallesServicioVehiculosController < ApplicationController
     redirect_to detalles_servicio_vehiculos_url, notice: 'Detalle del servicio eliminado exitosamente.'
   end
   
+  def iniciar_servicio
+    if @detalle_servicio_vehiculo.fecha_inicio.present?
+      redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), alert: 'Este servicio ya está iniciado.'
+      return
+    end
+    
+    @detalle_servicio_vehiculo.update!(fecha_inicio: Time.current)
+    redirect_to edit_detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), notice: 'Servicio iniciado exitosamente. Ahora puedes editarlo.'
+  end
+
   def cerrar_servicio
     if @detalle_servicio_vehiculo.fecha_fin.present?
       redirect_to detalles_servicio_vehiculo_path(@detalle_servicio_vehiculo), alert: 'Este servicio ya está cerrado.'
@@ -94,6 +105,26 @@ class DetallesServicioVehiculosController < ApplicationController
     
     # Manejar tanto GET como PATCH - ambos redirigen al formulario de productos
     redirect_to new_detalles_servicio_vehiculo_detalles_servicio_producto_path(@detalle_servicio_vehiculo)
+  end
+
+  def vehiculo_por_servicio
+    servicio = Servicio.find(params[:servicio_id])
+    vehiculo = servicio.vehiculo
+    if vehiculo
+      render json: {
+        id: vehiculo.id,
+        matricula: vehiculo.matricula,
+        marca: vehiculo.marca,
+        modelo: vehiculo.modelo,
+        anio: vehiculo.anio,
+        cliente: {
+          nombre: vehiculo.cliente.nombre,
+          apellido: vehiculo.cliente.apellido
+        }
+      }
+    else
+      render json: { error: "Servicio sin vehículo asociado" }, status: :unprocessable_entity
+    end
   end
 
   private

@@ -21,6 +21,26 @@
       <!-- Navegación principal - Desktop -->
       <div class="hidden md:flex items-center space-x-2">
         
+        <% if current_user.cargo == 'tecnico' %>
+          <!-- Solo servicios aplicados para técnicos -->
+          <%= link_to detalles_servicio_vehiculos_path, class: "px-3 py-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-50 font-medium transition-colors flex items-center space-x-2 #{'text-blue-600 bg-blue-50' if current_page?(detalles_servicio_vehiculos_path) || controller_name == 'detalles_servicio_vehiculos'}" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            <span>Servicios Aplicados</span>
+          <% end %>
+          
+          <%= link_to productos_path, class: "px-3 py-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-50 font-medium transition-colors flex items-center space-x-2 #{'text-blue-600 bg-blue-50' if current_page?(productos_path) || controller_name == 'productos'}" do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+            <span>Productos</span>
+          <% end %>
+          
+        <% else %>
+          <!-- Navegación completa para otros roles -->
+        
         <%= link_to clientes_path, class: nav_link_classes('clientes') do %>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -36,11 +56,13 @@
           <span>Vehículos</span>
         <% end %>
         
-        <%= link_to proveedores_path, class: nav_link_classes('proveedores') do %>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-          </svg>
-          <span>Proveedores</span>
+        <% unless current_user.cargo == 'comercial' %>
+          <%= link_to proveedores_path, class: nav_link_classes('proveedores') do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>Proveedores</span>
+          <% end %>
         <% end %>
         
         <%= link_to productos_path, class: nav_link_classes('productos') do %>
@@ -50,11 +72,13 @@
           <span>Productos</span>
         <% end %>
         
-        <%= link_to users_path, class: nav_link_classes('users') do %>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          <span>Usuarios</span>
+        <% unless current_user.cargo == 'comercial' %>
+          <%= link_to users_path, class: nav_link_classes('users') do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span>Usuarios</span>
+          <% end %>
         <% end %>
         
         <%= link_to servicios_path, class: "text-gray-600 hover:text-blue-600 font-medium #{'text-blue-600' if current_page?(servicios_path) || controller_name == 'servicios'}" do %>
@@ -73,12 +97,14 @@
           📦 Pedidos
         <% end %>
         
+        <% end %>
+        
       </div>
 
       <!-- Usuario y acciones - Desktop -->
       <div class="hidden md:flex items-center space-x-4">
         <!-- Info del usuario -->
-        <div class="flex items-center space-x-3 px-3 py-2 bg-gray-50 rounded-lg">
+        <%= link_to user_path(current_user), class: "flex items-center space-x-3 px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors" do %>
           <div class="relative">
             <div class="w-8 h-8 bg-gray-600 rounded-lg flex items-center justify-center">
               <span class="text-white font-medium text-sm">
@@ -95,7 +121,7 @@
               <%= current_user.cargo_humanizado %>
             </p>
           </div>
-        </div>
+        <% end %>
 
         <!-- Botón de cerrar sesión -->
 
@@ -123,40 +149,65 @@
   <div id="mobile-menu" class="md:hidden hidden bg-gray-50 border-t border-gray-200">
     <div class="px-2 pt-2 pb-3 space-y-1">
       
-      <%= link_to clientes_path, class: mobile_nav_link_classes('clientes') do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-        </svg>
-        <span>Clientes</span>
-      <% end %>
-      
-      <%= link_to vehiculos_path, class: mobile_nav_link_classes('vehiculos') do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12a3 3 0 006 0 3 3 0 00-6 0z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0-1.5-3-9-9-9s-9 7.5-9 9 3 9 9 9 9-7.5 9-9z"></path>
-        </svg>
-        <span>Vehículos</span>
-      <% end %>
-      
-      <%= link_to proveedores_path, class: mobile_nav_link_classes('proveedores') do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-        </svg>
-        <span>Proveedores</span>
-      <% end %>
-      
-      <%= link_to productos_path, class: mobile_nav_link_classes('productos') do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-        </svg>
-        <span>Productos</span>
-      <% end %>
-      
-      <%= link_to users_path, class: mobile_nav_link_classes('users') do %>
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-        </svg>
-        <span>Usuarios</span>
+      <% if current_user.cargo == 'tecnico' %>
+        <!-- Solo servicios aplicados para técnicos en móvil -->
+        <%= link_to detalles_servicio_vehiculos_path, class: "flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-white font-medium transition-colors #{'text-blue-600 bg-white' if current_page?(detalles_servicio_vehiculos_path) || controller_name == 'detalles_servicio_vehiculos'}" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          <span>Servicios Aplicados</span>
+        <% end %>
+        
+        <%= link_to productos_path, class: "flex items-center space-x-3 px-3 py-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-white font-medium transition-colors #{'text-blue-600 bg-white' if current_page?(productos_path) || controller_name == 'productos'}" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <span>Productos</span>
+        <% end %>
+        
+      <% else %>
+        <!-- Navegación completa para otros roles en móvil -->
+        <%= link_to clientes_path, class: mobile_nav_link_classes('clientes') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+          <span>Clientes</span>
+        <% end %>
+        
+        <%= link_to vehiculos_path, class: mobile_nav_link_classes('vehiculos') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12a3 3 0 006 0 3 3 0 00-6 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12c0-1.5-3-9-9-9s-9 7.5-9 9 3 9 9 9 9-7.5 9-9z"></path>
+          </svg>
+          <span>Vehículos</span>
+        <% end %>
+        
+        <% unless current_user.cargo == 'comercial' %>
+          <%= link_to proveedores_path, class: mobile_nav_link_classes('proveedores') do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>Proveedores</span>
+          <% end %>
+        <% end %>
+        
+        <%= link_to productos_path, class: mobile_nav_link_classes('productos') do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <span>Productos</span>
+        <% end %>
+        
+        <% unless current_user.cargo == 'comercial' %>
+          <%= link_to users_path, class: mobile_nav_link_classes('users') do %>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <span>Usuarios</span>
+          <% end %>
+        <% end %>
+        
       <% end %>
       
     </div>
@@ -164,7 +215,7 @@
     <!-- Mobile user section -->
     <div class="border-t border-gray-200 pt-4 pb-3">
       <div class="px-4 flex items-center justify-between">
-        <div class="flex items-center">
+        <%= link_to user_path(current_user), class: "flex items-center hover:opacity-80 transition-opacity" do %>
           <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
             <span class="text-white font-medium">
               <%= current_user.nombre[0].upcase %><%= current_user.apellido[0].upcase %>
@@ -178,7 +229,7 @@
               <%= current_user.cargo_humanizado %>
             </div>
           </div>
-        </div>
+        <% end %>
 
         <%= button_to "Salir", session_path, method: :delete,
             class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" if authenticated?

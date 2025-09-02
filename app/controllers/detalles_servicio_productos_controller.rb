@@ -2,12 +2,16 @@ class DetallesServicioProductosController < ApplicationController
   include Authentication
   
   before_action :set_detalle_servicio_vehiculo
-  before_action :set_detalle_servicio_producto, only: [:edit, :update, :destroy]
+  before_action :set_detalle_servicio_producto, only: [:show, :edit, :update, :destroy]
 
   def index
     @detalles_servicio_productos = @detalle_servicio_vehiculo.servicio.detalles_servicio_productos
                                                                       .includes(:producto)
                                                                       .order(:created_at)
+  end
+
+  def show
+    # Mostrar detalles del producto usado en el servicio
   end
 
   def new

@@ -2,8 +2,8 @@ class Producto < ApplicationRecord
   self.table_name = 'productos'
   
   belongs_to :proveedor
-  has_many :detalles_pedidos, dependent: :destroy
-  has_many :detalles_facturas, dependent: :destroy
+  has_many :detalles_pedidos, class_name: 'DetallePedido', dependent: :destroy
+  has_many :detalles_facturas, class_name: 'DetalleFactura', dependent: :destroy
   has_many :detalles_servicio_productos, class_name: 'DetalleServicioProducto', dependent: :destroy
   
   validates :nombre, presence: true

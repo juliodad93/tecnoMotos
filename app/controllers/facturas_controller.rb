@@ -32,7 +32,7 @@ class FacturasController < ApplicationController
     @monto_total = @facturas.sum(:total)
     @monto_pendiente = @facturas.where(estado: 'pendiente').sum(:total)
     
-    @estados = ['pendiente', 'pagada', 'anulada']
+    @estados = Factura::ESTADOS
     @clientes = Cliente.order(:nombre, :apellido)
     @meses = (1..12).map { |m| [Date::MONTHNAMES[m], m] }
     @años = (Date.current.year - 2..Date.current.year + 1).to_a.reverse

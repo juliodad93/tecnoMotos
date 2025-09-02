@@ -154,7 +154,11 @@
         <div>
           <dt class="text-sm font-medium text-gray-500">Fecha de Inicio</dt>
           <dd class="mt-1 text-sm text-gray-900 font-semibold">
-            <%= @detalle_servicio_vehiculo.fecha_inicio.strftime("%d de %B de %Y a las %H:%M") %>
+            <% if @detalle_servicio_vehiculo.fecha_inicio %>
+              <%= @detalle_servicio_vehiculo.fecha_inicio.strftime("%d de %B de %Y a las %H:%M") %>
+            <% else %>
+              <span class="text-gray-500">No iniciado</span>
+            <% end %>
           </dd>
         </div>
         
@@ -163,8 +167,10 @@
           <dd class="mt-1 text-sm text-gray-900 font-semibold">
             <% if @detalle_servicio_vehiculo.fecha_fin %>
               <%= @detalle_servicio_vehiculo.fecha_fin.strftime("%d de %B de %Y a las %H:%M") %>
-            <% else %>
+            <% elsif @detalle_servicio_vehiculo.fecha_inicio %>
               <span class="text-yellow-600">Servicio en progreso</span>
+            <% else %>
+              <span class="text-gray-500">No iniciado</span>
             <% end %>
           </dd>
         </div>

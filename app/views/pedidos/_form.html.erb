@@ -75,8 +75,8 @@
             <%= form.select :proveedor_id, 
                 options_from_collection_for_select(@proveedores, :id, :nombre, @pedido.proveedor_id),
                 { prompt: "Selecciona un proveedor" },
-                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" } %>
-            <p class="mt-1 text-xs text-gray-500">Elige el proveedor al que harás el pedido</p>
+                { class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm", id: "proveedor_select" } %>
+            <p class="mt-1 text-xs text-gray-500">Elige el proveedor al que harás el pedido. Los productos se filtrarán automáticamente.</p>
           </div>
 
           <!-- Grid para total y estado -->
@@ -110,9 +110,16 @@
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-medium text-gray-900">🛍️ Productos del Pedido</h3>
               <button type="button" id="agregar-producto-btn" 
-                      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                      class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                      disabled>
                 + Agregar Producto
               </button>
+            </div>
+            
+            <div id="mensaje-proveedor" class="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+              <p class="text-blue-700">
+                <span class="font-medium">💡 Selecciona un proveedor</span> para ver los productos disponibles
+              </p>
             </div>
             
             <div id="productos-container">
@@ -176,9 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const agregarBtn = document.getElementById('agregar-producto-btn');
   const totalPedido = document.getElementById('total-pedido');
   const totalInput = document.querySelector('input[name="pedido[total]"]');
+  const proveedorSelect = document.getElementById('proveedor_select');
+  const mensajeProveedor = document.getElementById('mensaje-proveedor');
 
-  // Lista de productos disponibles
-  const productos = [
+  // Lista de productos disponibles (se cargará dinámicamente)
+  let productos = [
     <% @productos.each do |producto| %>
       {
         id: <%= producto.id %>,
@@ -244,7 +253,71 @@ document.addEventListener('DOMContentLoaded', function() {
     totalInput.value = total.toFixed(2);
   }
 
+  function actualizarOpcionesProductos() {
+    document.querySelectorAll('.producto-select').forEach(select => {
+      const valorAnterior = select.value;
+      select.innerHTML = '<option value="">Seleccionar producto</option>';
+      
+      productos.forEach(producto => {
+        const option = document.createElement('option');
+        option.value = producto.id;
+        option.textContent = producto.nombre;
+        option.dataset.precio = producto.precio;
+        if (producto.id == valorAnterior) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+    });
+  }
+
+  function cargarProductosPorProveedor(proveedorId) {
+    if (!proveedorId) {
+      productos = [];
+      agregarBtn.disabled = true;
+      mensajeProveedor.style.display = 'block';
+      // Limpiar productos existentes
+      productosContainer.innerHTML = '';
+      actualizarTotales();
+      return;
+    }
+
+    fetch(`/pedidos/productos_por_proveedor?proveedor_id=${proveedorId}`)
+      .then(response => response.json())
+      .then(data => {
+        productos = data.map(p => ({
+          id: p.id,
+          nombre: p.nombre,
+          precio: p.precio_unitario
+        }));
+        
+        agregarBtn.disabled = false;
+        mensajeProveedor.style.display = 'none';
+        
+        // Actualizar selects de productos existentes
+        actualizarOpcionesProductos();
+        
+        // Si no hay productos en el contenedor, agregar uno por defecto
+        if (productosContainer.children.length === 0) {
+          agregarBtn.click();
+        }
+      })
+      .catch(error => {
+        console.error('Error cargando productos:', error);
+        alert('Error al cargar los productos del proveedor');
+      });
+  }
+
+  // Manejar cambio de proveedor
+  proveedorSelect.addEventListener('change', function() {
+    cargarProductosPorProveedor(this.value);
+  });
+
   agregarBtn.addEventListener('click', function() {
+    if (productos.length === 0) {
+      alert('Selecciona un proveedor primero');
+      return;
+    }
     const html = crearFilaProducto(productoIndex);
     productosContainer.insertAdjacentHTML('beforeend', html);
     productoIndex++;
@@ -275,7 +348,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Agregar un producto por defecto
-  agregarBtn.click();
+  // Cargar productos si ya hay un proveedor seleccionado (para casos de edición)
+  if (proveedorSelect.value) {
+    cargarProductosPorProveedor(proveedorSelect.value);
+  }
 });
 </script>

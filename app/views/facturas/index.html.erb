@@ -67,7 +67,7 @@
       <div class="grid grid-cols-5 gap-4 items-end">
         <div>
           <%= form.label :estado, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= form.select :estado, options_for_select([['Todos', '']] + @estados.map { |e| [e.humanize, e] }, params[:estado]), 
+          <%= form.select :estado, options_for_select([['Todos', '']] + @estados.map { |k, v| [v, k] }, params[:estado]), 
                          {}, { class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
         </div>
       

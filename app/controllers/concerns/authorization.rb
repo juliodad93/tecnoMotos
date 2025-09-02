@@ -25,43 +25,44 @@ module Authorization
 
   def authorize_tecnico(controller, action)
     allowed_actions = {
-      # Servicios - Solo ver pendientes y cerrar
-      'detalles_servicio_vehiculos' => ['index', 'show', 'edit', 'update'],
-      'detalles_servicio_productos' => ['index', 'show', 'edit', 'update'],
+      # Solo servicios aplicados y productos relacionados
+      'detalles_servicio_vehiculos' => ['index', 'show', 'edit', 'update', 'iniciar_servicio', 'cerrar_servicio'],
+      'detalles_servicio_productos' => ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy', 'finalizar_servicio'],
+      'productos' => ['index', 'show', 'new', 'create', 'edit', 'update'],
       
-      # Solo lectura para contexto
-      'clientes' => ['index', 'show'],
-      'vehiculos' => ['index', 'show'],
-      'productos' => ['index', 'show'],
-      
-      # Páginas básicas
+      # Páginas básicas y perfil
+      'home' => ['index'],
       'sessions' => ['destroy'],
-      'passwords' => ['edit', 'update']
+      'passwords' => ['edit', 'update'],
+      'users' => ['show', 'edit', 'update'] # Solo su propio perfil
     }
 
     unless allowed_actions[controller]&.include?(action)
-      redirect_to root_path, alert: 'No tienes permisos para realizar esta acción.'
+      redirect_to detalles_servicio_vehiculos_path, alert: 'No tienes permisos para realizar esta acción.'
     end
   end
 
   def authorize_comercial(controller, action)
     allowed_actions = {
       # Servicios - Solo ver pendientes y cerrar
-      'detalles_servicio_vehiculos' => ['index', 'show'],
+      'detalles_servicio_vehiculos' => ['index', 'show', 'new', 'create', 'edit', 'update', 'vehiculo_por_servicio'],
       'detalles_servicio_productos' => ['index', 'show'],
+      'detalles_facturas' => ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy'],
+      'detalles_pedidos' => ['index', 'show', 'new', 'create', 'edit', 'update', 'destroy'],
       
       # Solo lectura para contexto
-      'clientes' => ['index', 'show', 'new', 'edit', 'update'],
-      'vehiculos' => ['index', 'show', 'new', 'edit', 'update'],
-      'productos' => ['index', 'show', 'new', 'edit', 'update'],
-      'facturas' => ['index', 'show', 'new', 'edit', 'update'],
-      'pedidos' => ['index', 'show', 'new', 'edit', 'update'],
-      'proveedores' => ['index', 'show'],
-      'servicios' => ['index', 'show'],
+      'clientes' => ['index', 'show', 'new', 'create', 'edit', 'update', 'search'],
+      'vehiculos' => ['index', 'show', 'new', 'create', 'edit', 'update'],
+      'productos' => ['index', 'show', 'new', 'create', 'edit', 'update'],
+      'facturas' => ['index', 'show', 'new', 'create', 'edit', 'update', 'desde_servicios', 'crear_desde_servicio', 'marcar_como_pagada', 'anular'],
+      'pedidos' => ['index', 'show', 'new', 'create', 'edit', 'update', 'productos_por_proveedor', 'marcar_como_enviado', 'marcar_como_recibido', 'marcar_como_completado', 'cancelar'],
+      'servicios' => ['index', 'show', 'new', 'create', 'edit', 'update', 'vehiculos_por_cliente'],
       
-      # Páginas básicas
+      # Páginas básicas y perfil propio
+      'home' => ['index'],
       'sessions' => ['destroy'],
-      'passwords' => ['edit', 'update']
+      'passwords' => ['edit', 'update'],
+      'users' => ['show', 'edit', 'update'] # Solo su propio perfil
     }
 
     unless allowed_actions[controller]&.include?(action)

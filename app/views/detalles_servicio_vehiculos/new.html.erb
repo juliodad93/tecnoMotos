@@ -41,14 +41,14 @@
       <div>
         <%= form.label :servicio_id, "Servicio a Aplicar", class: "block text-sm font-medium text-gray-700 mb-2" %>
         <%= form.select :servicio_id, 
-            options_from_collection_for_select(@servicios, :id, ->(s) { "#{s.vehiculo&.matricula} - #{s.nombre} - #{s.categoria} (#{number_to_currency(s.precio_base)})" }, @detalle_servicio_vehiculo.servicio_id),
+            options_from_collection_for_select(@servicios, :id, ->(s) { "#{s.cliente&.nombre} #{s.cliente&.apellido} - #{s.vehiculo&.matricula} - #{s.nombre} - #{s.categoria_humanizada} (#{number_to_currency(s.precio_base)})" }, @detalle_servicio_vehiculo.servicio_id),
             { prompt: "Selecciona un servicio" },
             { 
               class: "w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
               required: true,
               id: "servicio_select"
             } %>
-        <p class="mt-1 text-sm text-gray-500">Selecciona el servicio que vas a aplicar al vehículo</p>
+        <p class="mt-1 text-sm text-gray-500">Selecciona el servicio que vas a aplicar. El vehículo se seleccionará automáticamente.</p>
       </div>
 
       <!-- Selección de Vehículo -->
@@ -56,13 +56,20 @@
         <%= form.label :vehiculo_id, "Vehículo", class: "block text-sm font-medium text-gray-700 mb-2" %>
         <%= form.select :vehiculo_id, 
             options_from_collection_for_select(@vehiculos, :id, ->(v) { "#{v.matricula} - #{v.marca} #{v.modelo} (#{v.cliente.nombre} #{v.cliente.apellido})" }, @detalle_servicio_vehiculo.vehiculo_id),
-            { prompt: "Selecciona un vehículo" },
+            { prompt: "Primero selecciona un servicio" },
             { 
-              class: "w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              class: "w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100",
               required: true,
-              id: "vehiculo_select"
+              id: "vehiculo_select",
+              disabled: true
             } %>
-        <p class="mt-1 text-sm text-gray-500">Selecciona el vehículo al que se aplicará el servicio</p>
+        <p class="mt-1 text-sm text-gray-500">El vehículo se seleccionará automáticamente basado en el servicio elegido</p>
+        
+        <div id="mensaje-servicio" class="text-center p-3 bg-blue-50 border border-blue-200 rounded-lg mt-2" style="display: <%= @detalle_servicio_vehiculo.servicio_id ? 'none' : 'block' %>">
+          <p class="text-blue-700 text-sm">
+            <span class="font-medium">💡 Selecciona un servicio</span> para ver automáticamente su vehículo asociado
+          </p>
+        </div>
       </div>
 
       <!-- Descripción -->
@@ -108,10 +115,75 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Mejorar la búsqueda en los selects
   const servicioSelect = document.getElementById('servicio_select');
   const vehiculoSelect = document.getElementById('vehiculo_select');
+  const mensajeServicio = document.getElementById('mensaje-servicio');
   
+  let vehiculoData = [
+    <% @vehiculos.each do |vehiculo| %>
+      {
+        id: <%= vehiculo.id %>,
+        matricula: '<%= j vehiculo.matricula %>',
+        marca: '<%= j vehiculo.marca %>',
+        modelo: '<%= j vehiculo.modelo %>',
+        anio: <%= vehiculo.anio %>,
+        cliente: {
+          nombre: '<%= j vehiculo.cliente.nombre %>',
+          apellido: '<%= j vehiculo.cliente.apellido %>'
+        }
+      },
+    <% end %>
+  ];
+
+  function cargarVehiculoPorServicio(servicioId) {
+    if (!servicioId) {
+      vehiculoSelect.disabled = true;
+      vehiculoSelect.classList.add('bg-gray-100');
+      vehiculoSelect.innerHTML = '<option value="">Primero selecciona un servicio</option>';
+      mensajeServicio.style.display = 'block';
+      return;
+    }
+
+    fetch(`/detalles_servicio_vehiculos/vehiculo_por_servicio?servicio_id=${servicioId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        
+        vehiculoSelect.disabled = false;
+        vehiculoSelect.classList.remove('bg-gray-100');
+        mensajeServicio.style.display = 'none';
+        
+        // Limpiar opciones y agregar el vehículo específico
+        vehiculoSelect.innerHTML = '';
+        
+        const option = document.createElement('option');
+        option.value = data.id;
+        option.textContent = `${data.matricula} - ${data.marca} ${data.modelo} (${data.cliente.nombre} ${data.cliente.apellido})`;
+        option.selected = true;
+        vehiculoSelect.appendChild(option);
+      })
+      .catch(error => {
+        console.error('Error cargando vehículo:', error);
+        alert('Error al cargar el vehículo del servicio');
+      });
+  }
+
+  // Manejar cambio de servicio
+  if (servicioSelect) {
+    servicioSelect.addEventListener('change', function() {
+      cargarVehiculoPorServicio(this.value);
+    });
+    
+    // Cargar vehículo si ya hay un servicio seleccionado (para casos de edición)
+    if (servicioSelect.value) {
+      cargarVehiculoPorServicio(servicioSelect.value);
+    }
+  }
+
+  // Mejorar la búsqueda en los selects
   [servicioSelect, vehiculoSelect].forEach(select => {
     if (select) {
       select.addEventListener('focus', function() {

@@ -26,7 +26,11 @@ Rails.application.routes.draw do
   resources :users
   resources :proveedores
   resources :productos
-  resources :servicios
+  resources :servicios do
+    collection do
+      get :vehiculos_por_cliente
+    end
+  end
   resources :facturas do
     member do
       patch :marcar_como_pagada
@@ -47,16 +51,24 @@ Rails.application.routes.draw do
       patch :marcar_como_completado
       patch :cancelar
     end
+    collection do
+      get :productos_por_proveedor
+    end
     resources :detalles_pedidos, path: 'detalles'
   end
   
   resources :detalles_servicio_vehiculos do
     member do
+      patch :iniciar_servicio
+      get :iniciar_servicio  # Agregar ruta GET como fallback
       patch :cerrar_servicio
       get :cerrar_servicio  # Agregar ruta GET como fallback
     end
+    collection do
+      get :vehiculo_por_servicio
+    end
     
-    resources :detalles_servicio_productos, except: [:show] do
+    resources :detalles_servicio_productos do
       collection do
         post :finalizar_servicio
       end

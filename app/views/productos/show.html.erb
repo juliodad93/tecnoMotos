@@ -52,9 +52,11 @@
           <div class="flex space-x-3">
             <%= link_to "Editar", edit_producto_path(@producto), 
                 class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
-            <%= link_to "Eliminar", producto_path(@producto), method: :delete,
-                data: { confirm: "¿Estás seguro de que quieres eliminar #{@producto.nombre}?" },
-                class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" %>
+            <%= form_with url: producto_path(@producto), method: :delete, local: true, 
+                class: "inline" do |form| %>
+              <%= form.button "Eliminar", type: :submit,
+                  class: "bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 border-none" %>
+            <% end %>
           </div>
         </div>
       </div>
